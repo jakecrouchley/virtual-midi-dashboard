@@ -1,0 +1,28 @@
+{
+  "name": "virtual-midi-dashboard",
+  "version": "1.0.0",
+  "description": "A configurable dashboard for controlling a virtual MIDI device",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jakecrouchley/virtual-midi-dashboard.git"
+  },
+  "keywords": [
+    "midi",
+    "virtual",
+    "device",
+    "dashboard"
+  ],
+  "author": "Jake Crouchley",
+  "license": "GPL-3.0-only",
+  "bugs": {
+    "url": "https://github.com/jakecrouchley/virtual-midi-dashboard/issues"
+  },
+  "homepage": "https://github.com/jakecrouchley/virtual-midi-dashboard#readme",
+  "dependencies": {
+    "easymidi": "^2.0.5"
+  }
+}
