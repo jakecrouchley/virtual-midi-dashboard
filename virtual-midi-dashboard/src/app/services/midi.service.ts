@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 
 export const MIDI_CHANNEL = 1;
-export const SERVER_URL = 'http://localhost:8080';
+export const SERVER_URL = 'http://0.0.0.0:8080';
 
 export type MidiEvent =
   | 'noteon'
@@ -30,7 +30,7 @@ export class MidiService {
   constructor(private http: HttpClient) {}
 
   sendMidiNoteOn(note: number, velocity: number = 127) {
-    return this.http.post(SERVER_URL + '/send-midi', {
+    return this.http.post('/send-midi', {
       note,
       velocity,
     });

@@ -51,7 +51,7 @@ export class App {
       return res.status(200).send();
     });
 
-    return this.app.listen(this.port, () => {
+    return this.app.listen(this.port, "0.0.0.0", () => {
       // tslint:disable-next-line:no-console
       console.log(`server started at http://localhost:${this.port}`);
     });
