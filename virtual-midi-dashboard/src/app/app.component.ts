@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService, ICell } from './services/data.service';
+import { MidiService } from './services/midi.service';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,10 @@ export class AppComponent implements OnInit {
 
   cells: ICell[] = [];
 
-  constructor(public dataService: DataService) {}
+  constructor(
+    private dataService: DataService,
+    private midiService: MidiService
+  ) {}
 
   ngOnInit() {
     this.dataService.getCells().subscribe((cells) => {
@@ -26,12 +30,11 @@ export class AppComponent implements OnInit {
       note: 64,
       velocity: 127,
       label: 'Test',
+      event: 'noteon',
     });
   }
 
   performCellAction(cell: ICell) {
-    if (cell.action) {
-      cell.action();
-    }
+    // this.midiService.sendMidiNoteOn(cell.note, cell.velocity);
   }
 }

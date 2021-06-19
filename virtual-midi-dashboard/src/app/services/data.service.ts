@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { MidiEvent } from './midi.service';
 
 export interface ICell {
   note: number;
   velocity: number;
   label: string;
-  action?: () => void;
+  event: MidiEvent;
 }
 
 @Injectable({
@@ -17,9 +18,7 @@ export class DataService {
       note: 64,
       velocity: 127,
       label: 'Test',
-      action: () => {
-        console.log('test');
-      },
+      event: 'noteon',
     },
   ]);
 
