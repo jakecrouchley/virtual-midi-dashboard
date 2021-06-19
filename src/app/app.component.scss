@@ -1,0 +1,26 @@
+.cell-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  height: 100%;
+}
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 2px;
+
+  border: solid 2px #eee;
+  border-radius: 8px;
+  cursor: pointer;
+
+  user-select: none;
+
+  &:hover {
+    background-color: #eee;
+  }
+}

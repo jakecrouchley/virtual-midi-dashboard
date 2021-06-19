@@ -1,0 +1,20 @@
+<div class="top-row"></div>
+<div class="cell-container" [style.width.px]="cellSideLength">
+  <div
+    class="cell"
+    *ngFor="let cell of cells"
+    [style.width.px]="cellSideLength"
+    [style.height.px]="cellSideLength"
+    (click)="performCellAction(cell)"
+  >
+    <span>{{ cell.label }}</span>
+  </div>
+  <div
+    class="cell"
+    [style.width.px]="cellSideLength"
+    [style.height.px]="cellSideLength"
+    (click)="appendNewCell()"
+  >
+    <span>+</span>
+  </div>
+</div>
