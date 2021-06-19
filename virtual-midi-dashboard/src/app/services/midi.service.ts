@@ -1,6 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 
 export const MIDI_CHANNEL = 1;
+export const SERVER_URL = 'http://localhost:8080';
 
 export type MidiEvent =
   | 'noteon'
@@ -25,19 +27,12 @@ export type MidiEvent =
   providedIn: 'root',
 })
 export class MidiService {
-  // virtualOutput?: Output;
-  // constructor() {
-  //   this.virtualOutput = new Output('Virtual MIDI Dashboard', true);
-  // }
-  // sendMidiNoteOn(note: number, velocity: number = 127) {
-  //   const params: Note = {
-  //     note,
-  //     velocity,
-  //     channel: MIDI_CHANNEL,
-  //   };
-  //   this.virtualOutput?.send('noteon', params);
-  // }
-  // ngOnDestroy(): void {
-  //   this.virtualOutput?.close();
-  // }
+  constructor(private http: HttpClient) {}
+
+  sendMidiNoteOn(note: number, velocity: number = 127) {
+    return this.http.post(SERVER_URL + '/send-midi', {
+      note,
+      velocity,
+    });
+  }
 }

@@ -35,6 +35,12 @@ export class AppComponent implements OnInit {
   }
 
   performCellAction(cell: ICell) {
-    // this.midiService.sendMidiNoteOn(cell.note, cell.velocity);
+    console.log(cell);
+
+    this.midiService
+      .sendMidiNoteOn(cell.note, cell.velocity)
+      .subscribe((response) => {
+        console.log(response);
+      });
   }
 }
