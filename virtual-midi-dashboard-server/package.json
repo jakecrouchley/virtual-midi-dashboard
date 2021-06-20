@@ -1,5 +1,5 @@
 {
-  "name": "virtual-midi-dashboard",
+  "name": "virtual-midi-dashboard-server",
   "version": "1.0.0",
   "description": "Server to set up a virtual MIDI dashboard and associated virtual device to receive/send commands",
   "main": "dist/index.js",

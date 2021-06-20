@@ -29,8 +29,7 @@ export class App {
       express.static(
         path.join(
           __dirname,
-          "..",
-          "virtual-midi-dashboard/dist/virtual-midi-dashboard"
+          "../../virtual-midi-dashboard-app/dist/virtual-midi-dashboard"
         )
       )
     );

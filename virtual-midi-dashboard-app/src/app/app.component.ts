@@ -57,13 +57,9 @@ export class AppComponent implements OnInit {
   }
 
   performCellAction(cell: ICell) {
-    console.log(cell);
-
     this.midiService
       .sendMidiNoteOn(cell.note, cell.velocity)
-      .subscribe((response) => {
-        console.log(response);
-      });
+      .subscribe((_) => {});
   }
 
   async installPWA() {
