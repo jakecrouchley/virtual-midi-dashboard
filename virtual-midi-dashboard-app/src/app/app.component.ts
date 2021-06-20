@@ -1,5 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { DataService, ICell } from './services/data.service';
+import { MatDialog } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
+import { InsertCellDialogComponent } from './components/insert-cell-dialog/insert-cell-dialog.component';
+import {
+  DataService,
+  ICCCell,
+  ICell,
+  IMIDICell,
+} from './services/data.service';
 import { MidiService } from './services/midi.service';
 
 @Component({
@@ -14,32 +22,11 @@ export class AppComponent implements OnInit {
 
   cells: ICell[] = [];
 
-  deferredPrompt: any;
-
   constructor(
     private dataService: DataService,
-    private midiService: MidiService
-  ) {
-    window.addEventListener('beforeinstallprompt', (e) => {
-      // Prevent the mini-infobar from appearing on mobile
-      e.preventDefault();
-      // Stash the event so it can be triggered later.
-      this.deferredPrompt = e;
-
-      // Update UI notify the user they can install the PWA
-
-      // Optionally, send analytics event that PWA install promo was shown.
-      console.log(`'beforeinstallprompt' event was fired.`);
-    });
-    window.addEventListener('appinstalled', () => {
-      // Hide the app-provided install promotion
-
-      // Clear the deferredPrompt so it can be garbage collected
-      this.deferredPrompt = null;
-      // Optionally, send analytics event to indicate successful install
-      console.log('PWA was installed');
-    });
-  }
+    private midiService: MidiService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     this.dataService.getCells().subscribe((cells) => {
@@ -47,31 +34,49 @@ export class AppComponent implements OnInit {
     });
   }
 
-  appendNewCell() {
-    this.dataService.appendCell({
-      note: 64,
-      velocity: 127,
-      label: 'Test',
-      event: 'noteon',
-    });
-  }
+  // appendNewCell() {
+  //   this.dataService.appendCell({
+  //     note: 64,
+  //     velocity: 127,
+  //     label: 'Test',
+  //     event: 'noteon',
+  //   });
+  // }
 
   performCellAction(cell: ICell) {
-    this.midiService
-      .sendMidiNoteOn(cell.note, cell.velocity)
-      .subscribe((_) => {});
+    let cellAction;
+    switch (cell.type) {
+      case 'midi':
+        cellAction = this.midiService.sendMidiNoteOn(cell as IMIDICell);
+        break;
+      case 'cc':
+        cellAction = this.midiService.sendCC(cell as ICCCell);
+        break;
+      default:
+        cellAction = this.midiService.sendMidiNoteOn(cell as IMIDICell);
+    }
+    cellAction.subscribe((_) => {});
   }
 
-  async installPWA() {
-    // Hide the app provided install promotion
+  getCellInfoText(cell: ICell) {
+    if (cell.type === 'midi') {
+      const midiCell = cell as IMIDICell;
+      return `${midiCell.note}, ${midiCell.velocity}`;
+    } else {
+      const ccCell = cell as ICCCell;
+      return `${ccCell.controller}, ${ccCell.value}`;
+    }
+  }
 
-    // Show the install prompt
-    this.deferredPrompt.prompt();
-    // Wait for the user to respond to the prompt
-    const { outcome } = await this.deferredPrompt.userChoice;
-    // Optionally, send analytics event with outcome of user choice
-    console.log(`User response to the install prompt: ${outcome}`);
-    // We've used the prompt, and can't use it again, throw it away
-    this.deferredPrompt = null;
+  openDialog() {
+    const dialogRef = this.dialog.open(InsertCellDialogComponent);
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log(`Dialog result: ${result}`);
+      if (result) {
+        const cell = result as ICell;
+        this.dataService.appendCell(cell);
+      }
+    });
   }
 }

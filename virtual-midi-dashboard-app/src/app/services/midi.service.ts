@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, isDevMode, OnDestroy } from '@angular/core';
+import { ICCCell, IMIDICell } from './data.service';
 
 export const MIDI_CHANNEL = 1;
 
@@ -28,10 +29,17 @@ export type MidiEvent =
 export class MidiService {
   constructor(private http: HttpClient) {}
 
-  sendMidiNoteOn(note: number, velocity: number = 127) {
+  sendMidiNoteOn(cell: IMIDICell) {
     return this.http.post(this.getBaseURL() + '/send-midi', {
-      note,
-      velocity,
+      note: cell.note,
+      velocity: cell.velocity,
+    });
+  }
+
+  sendCC(cell: ICCCell) {
+    return this.http.post(this.getBaseURL() + '/send-cc', {
+      controller: cell.controller,
+      value: cell.value,
     });
   }
 

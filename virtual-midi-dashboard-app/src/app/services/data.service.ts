@@ -3,10 +3,18 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { MidiEvent } from './midi.service';
 
 export interface ICell {
+  label: string;
+  type: 'midi' | 'cc';
+}
+
+export interface IMIDICell extends ICell {
   note: number;
   velocity: number;
-  label: string;
-  event: MidiEvent;
+}
+
+export interface ICCCell extends ICell {
+  controller: number;
+  value: number;
 }
 
 @Injectable({
@@ -18,8 +26,8 @@ export class DataService {
       note: 64,
       velocity: 127,
       label: 'Test',
-      event: 'noteon',
-    },
+      type: 'midi',
+    } as IMIDICell,
   ]);
 
   constructor() {}

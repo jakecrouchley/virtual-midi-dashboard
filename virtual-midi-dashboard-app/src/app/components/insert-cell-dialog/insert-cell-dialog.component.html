@@ -1,0 +1,69 @@
+<h2 mat-dialog-title>Add Cell Action</h2>
+<mat-dialog-content class="mat-typography">
+  <form class="dialog-form" [formGroup]="newCellForm">
+    <div>
+      <label>Event type: </label>
+      <mat-radio-group formControlName="type">
+        <mat-radio-button value="midi">MIDI</mat-radio-button>
+        <mat-radio-button value="cc">CC</mat-radio-button>
+      </mat-radio-group>
+    </div>
+    <br />
+
+    <!-- MIDI Form -->
+    <div *ngIf="newCellForm.controls.type.value === 'midi'">
+      <mat-form-field appearance="fill">
+        <mat-label>Note</mat-label>
+        <input formControlName="note" min="0" type="number" matInput />
+      </mat-form-field>
+      <br />
+      <mat-form-field appearance="fill">
+        <mat-label>Velocity</mat-label>
+        <input
+          formControlName="velocity"
+          min="0"
+          max="127"
+          type="number"
+          matInput
+        />
+      </mat-form-field>
+    </div>
+
+    <!-- CC Form -->
+    <div *ngIf="newCellForm.controls.type.value === 'cc'">
+      <mat-form-field appearance="fill">
+        <mat-label>Controller</mat-label>
+        <input
+          formControlName="controller"
+          min="0"
+          max="127"
+          type="number"
+          matInput
+        />
+      </mat-form-field>
+      <br />
+      <mat-form-field appearance="fill">
+        <mat-label>Value</mat-label>
+        <input
+          formControlName="value"
+          min="0"
+          max="127"
+          type="number"
+          matInput
+        />
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button
+    mat-button
+    [disabled]="!newCellForm.valid"
+    color="primary"
+    [mat-dialog-close]="newCellForm.value"
+    cdkFocusInitial
+  >
+    Add
+  </button>
+</mat-dialog-actions>

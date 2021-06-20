@@ -19,6 +19,11 @@
     "lib": [
       "es2018",
       "dom"
+    ],
+    "types": [
+      "node_modules/@types",
+      "node_modules/@angular",
+      "node_modules/@angular/material"
     ]
   },
   "angularCompilerOptions": {

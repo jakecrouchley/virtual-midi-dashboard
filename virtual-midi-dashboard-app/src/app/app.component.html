@@ -7,13 +7,13 @@
     [style.height.px]="cellSideLength"
     (click)="performCellAction(cell)"
   >
-    <span>{{ cell.label }}</span>
+    <span>{{ cell.type }} {{ getCellInfoText(cell) }}</span>
   </div>
   <div
     class="cell"
     [style.width.px]="cellSideLength"
     [style.height.px]="cellSideLength"
-    (click)="appendNewCell()"
+    (click)="openDialog()"
   >
     <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action"
       >add</mat-icon
