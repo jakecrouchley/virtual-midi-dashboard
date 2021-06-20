@@ -1,3 +1,5 @@
+$icon-size: 72px;
+
 .cell-container {
   display: flex;
   flex-direction: column;
@@ -23,4 +25,11 @@
   &:hover {
     background-color: #eee;
   }
+}
+
+.cell-icon {
+  width: $icon-size;
+  height: $icon-size;
+
+  font-size: $icon-size;
 }

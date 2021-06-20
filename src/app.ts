@@ -2,13 +2,13 @@ import express from "express";
 import cors from "cors";
 import { Server } from "http";
 import path from "path";
-import { Note, Output } from "easymidi";
+import { ControlChange, Note, Output } from "easymidi";
 
 export class App {
   app = express();
   port = 8080;
 
-  midiChannel = 1;
+  midiChannel: 0 = 0;
 
   virtualOutput?: Output;
 
@@ -39,15 +39,27 @@ export class App {
 
     this.app.post("/send-midi", (req, res) => {
       const params = req.body;
-      console.log(params);
       const { note, velocity } = params;
 
       const noteData: Note = {
         note,
         velocity,
-        channel: 0,
+        channel: this.midiChannel,
       };
       this.virtualOutput?.send("noteon", noteData);
+      return res.status(200).send();
+    });
+
+    this.app.post("/send-cc", (req, res) => {
+      const params = req.body;
+      const { controller, value } = params;
+
+      const ccData: ControlChange = {
+        controller,
+        value,
+        channel: this.midiChannel,
+      };
+      this.virtualOutput?.send("cc", ccData);
       return res.status(200).send();
     });
 

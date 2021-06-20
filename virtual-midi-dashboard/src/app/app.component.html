@@ -15,6 +15,16 @@
     [style.height.px]="cellSideLength"
     (click)="appendNewCell()"
   >
-    <span>+</span>
+    <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action"
+      >add</mat-icon
+    >
   </div>
+  <!-- <div
+    class="cell"
+    [style.width.px]="cellSideLength"
+    [style.height.px]="cellSideLength"
+    (click)="installPWA()"
+  >
+    <span>Install PWA</span>
+  </div> -->
 </div>
