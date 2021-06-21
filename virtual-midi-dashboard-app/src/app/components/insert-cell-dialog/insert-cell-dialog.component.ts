@@ -1,6 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { DataService, ICell } from 'src/app/services/data.service';
+import { matIconList } from './icon-list';
+import { map, startWith } from 'rxjs/operators';
+
+export interface IconGroup {
+  group: string;
+  names: string[];
+}
+
+export const _filter = (opt: string[], value: string): string[] => {
+  const filterValue = value.toLowerCase();
+
+  return opt.filter((item) => item.toLowerCase().indexOf(filterValue) === 0);
+};
 
 @Component({
   selector: 'app-insert-cell-dialog',
@@ -14,9 +28,18 @@ export class InsertCellDialogComponent implements OnInit {
     velocity: [127, Validators.required],
     controller: [''],
     value: [127],
+    iconName: [''],
   });
 
-  constructor(private fb: FormBuilder, private dataService: DataService) {}
+  matIconList: IconGroup[] = matIconList;
+  matIconList$: Observable<IconGroup[]>;
+
+  constructor(private fb: FormBuilder, private dataService: DataService) {
+    this.matIconList$ = this.newCellForm.get('iconName')!.valueChanges.pipe(
+      startWith(''),
+      map((value) => this._filterGroup(value))
+    );
+  }
 
   ngOnInit(): void {
     this.newCellForm.get('type')!.valueChanges.subscribe((val) => {
@@ -38,5 +61,18 @@ export class InsertCellDialogComponent implements OnInit {
       this.newCellForm.controls.note.updateValueAndValidity();
       this.newCellForm.controls.velocity.updateValueAndValidity();
     });
+  }
+
+  private _filterGroup(value: string): IconGroup[] {
+    if (value) {
+      return this.matIconList
+        .map((group) => ({
+          group: group.group,
+          names: _filter(group.names, value),
+        }))
+        .filter((group) => group.names.length > 0);
+    }
+
+    return this.matIconList;
   }
 }

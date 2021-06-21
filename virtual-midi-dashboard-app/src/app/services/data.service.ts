@@ -5,6 +5,7 @@ import { MidiEvent } from './midi.service';
 export interface ICell {
   label: string;
   type: 'midi' | 'cc';
+  iconName: string;
 }
 
 export interface IMIDICell extends ICell {

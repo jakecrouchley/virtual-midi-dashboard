@@ -38,7 +38,8 @@ export class App {
 
     this.app.post("/send-midi", (req, res) => {
       const params = req.body;
-      const { note, velocity } = params;
+      const { note, velocity, iconName } = params;
+      console.log(iconName);
 
       const noteData: Note = {
         note,

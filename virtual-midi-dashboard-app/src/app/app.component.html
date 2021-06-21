@@ -7,6 +7,9 @@
     [style.height.px]="cellSideLength"
     (click)="performCellAction(cell)"
   >
+    <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action">{{
+      cell.iconName
+    }}</mat-icon>
     <span>{{ cell.type }} {{ getCellInfoText(cell) }}</span>
   </div>
   <div
