@@ -1,11 +1,12 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { MidiEvent } from './midi.service';
+import { Injectable, OnInit } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
+export const CELL_LOCAL_STORAGE_KEY = 'CELLS';
 export interface ICell {
   label: string;
   type: 'midi' | 'cc';
   iconName: string;
+  index: number;
 }
 
 export interface IMIDICell extends ICell {
@@ -22,22 +23,49 @@ export interface ICCCell extends ICell {
   providedIn: 'root',
 })
 export class DataService {
-  private cells$: BehaviorSubject<ICell[]> = new BehaviorSubject<ICell[]>([
-    {
-      note: 64,
-      velocity: 127,
-      label: 'Test',
-      type: 'midi',
-    } as IMIDICell,
-  ]);
+  cells$: BehaviorSubject<ICell[]> = new BehaviorSubject<ICell[]>([]);
 
-  constructor() {}
+  constructor() {
+    // Use any previously stored cells
+    const localCells = this.fetchStoredCells();
+    if (localCells) {
+      this.cells$.next(localCells);
+    }
 
-  getCells(): Observable<ICell[]> {
-    return this.cells$;
+    // Store cells each time they change
+    this.cells$.subscribe((cells) => {
+      this.storeCells(cells);
+    });
   }
 
   appendCell(cell: ICell) {
     this.cells$.next([...this.cells$.value, cell]);
+  }
+
+  removeCell(index: number) {
+    const newCells = this.cells$.value;
+    const indexToRemove = newCells.findIndex((cell) => cell.index === index);
+    newCells.splice(indexToRemove, 1);
+    this.cells$.next(newCells);
+  }
+
+  storeCells(cells: ICell[]) {
+    const jsonCells = JSON.stringify(cells);
+    localStorage.setItem(CELL_LOCAL_STORAGE_KEY, jsonCells);
+  }
+
+  fetchStoredCells(): ICell[] | null {
+    const storedCells = localStorage.getItem(CELL_LOCAL_STORAGE_KEY);
+    if (storedCells) {
+      try {
+        const cells = JSON.parse(storedCells);
+        return cells;
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
 }

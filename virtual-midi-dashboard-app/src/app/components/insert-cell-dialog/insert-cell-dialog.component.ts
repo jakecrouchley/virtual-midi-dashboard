@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { DataService, ICell } from 'src/app/services/data.service';
 import { matIconList } from './icon-list';
 import { map, startWith } from 'rxjs/operators';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface IconGroup {
   group: string;
@@ -29,12 +30,21 @@ export class InsertCellDialogComponent implements OnInit {
     controller: [''],
     value: [127],
     iconName: [''],
+    index: [0],
   });
 
   matIconList: IconGroup[] = matIconList;
   matIconList$: Observable<IconGroup[]>;
 
-  constructor(private fb: FormBuilder, private dataService: DataService) {
+  index: number;
+
+  constructor(
+    private fb: FormBuilder,
+    private dataService: DataService,
+    @Inject(MAT_DIALOG_DATA) public data: { index: number }
+  ) {
+    this.index = data.index;
+    this.newCellForm.get('index')?.setValue(this.index);
     this.matIconList$ = this.newCellForm.get('iconName')!.valueChanges.pipe(
       startWith(''),
       map((value) => this._filterGroup(value))

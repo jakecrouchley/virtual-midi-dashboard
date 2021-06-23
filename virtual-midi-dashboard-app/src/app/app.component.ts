@@ -19,6 +19,8 @@ export class AppComponent implements OnInit {
   NUM_ROWS = 3;
 
   cellSideLength = window.innerHeight / this.NUM_ROWS;
+  defaultGridCount =
+    Math.floor(window.innerWidth / this.cellSideLength) * this.NUM_ROWS;
 
   cells: ICell[] = [];
 
@@ -29,8 +31,19 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.dataService.getCells().subscribe((cells) => {
-      this.cells = cells;
+    this.dataService.cells$.subscribe((cells) => {
+      let startingGridSize = this.defaultGridCount;
+      cells.forEach((cell) => {
+        startingGridSize = Math.max(
+          isNaN(cell.index + 1) ? 0 : cell.index + 1,
+          startingGridSize
+        );
+      });
+
+      this.cells = new Array(startingGridSize);
+      cells.forEach((cell) => {
+        this.cells[cell.index] = cell;
+      });
     });
   }
 
@@ -43,19 +56,30 @@ export class AppComponent implements OnInit {
   //   });
   // }
 
-  performCellAction(cell: ICell) {
-    let cellAction;
-    switch (cell.type) {
-      case 'midi':
-        cellAction = this.midiService.sendMidiNoteOn(cell as IMIDICell);
-        break;
-      case 'cc':
-        cellAction = this.midiService.sendCC(cell as ICCCell);
-        break;
-      default:
-        cellAction = this.midiService.sendMidiNoteOn(cell as IMIDICell);
+  performCellAction(cell?: ICell, index?: number) {
+    if (cell) {
+      let cellAction;
+      switch (cell.type) {
+        case 'midi':
+          cellAction = this.midiService.sendMidiNoteOn(cell as IMIDICell);
+          break;
+        case 'cc':
+          cellAction = this.midiService.sendCC(cell as ICCCell);
+          break;
+        default:
+          cellAction = this.midiService.sendMidiNoteOn(cell as IMIDICell);
+      }
+      cellAction.subscribe((_) => {});
+    } else {
+      this.openDialog(index);
     }
-    cellAction.subscribe((_) => {});
+  }
+
+  onRightClick(event: Event, index?: number) {
+    event.preventDefault();
+    if (index) {
+      this.dataService.removeCell(index);
+    }
   }
 
   getCellInfoText(cell: ICell) {
@@ -68,8 +92,12 @@ export class AppComponent implements OnInit {
     }
   }
 
-  openDialog() {
-    const dialogRef = this.dialog.open(InsertCellDialogComponent);
+  openDialog(atIndex?: number) {
+    const dialogRef = this.dialog.open(InsertCellDialogComponent, {
+      data: {
+        index: atIndex ?? 0,
+      },
+    });
 
     dialogRef.afterClosed().subscribe((result) => {
       console.log(`Dialog result: ${result}`);

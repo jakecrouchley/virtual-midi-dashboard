@@ -2,21 +2,33 @@
 <div class="cell-container" [style.width.px]="cellSideLength">
   <div
     class="cell"
-    *ngFor="let cell of cells"
+    *ngFor="let cell of cells; let i = index"
     [style.width.px]="cellSideLength"
     [style.height.px]="cellSideLength"
-    (click)="performCellAction(cell)"
+    (click)="performCellAction(cell, i)"
+    (contextmenu)="onRightClick($event, i)"
   >
-    <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action">{{
-      cell.iconName
-    }}</mat-icon>
-    <span>{{ cell.type }} {{ getCellInfoText(cell) }}</span>
+    <ng-container *ngIf="cell; else noCell">
+      <mat-icon
+        class="cell-icon"
+        aria-hidden="false"
+        aria-label="Cell Action"
+        >{{ cell.iconName }}</mat-icon
+      >
+      <span>{{ cell.type }} {{ getCellInfoText(cell) }}</span>
+    </ng-container>
+    <ng-template #noCell>
+      <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action"
+        >add</mat-icon
+      >
+    </ng-template>
   </div>
   <div
     class="cell"
     [style.width.px]="cellSideLength"
     [style.height.px]="cellSideLength"
     (click)="openDialog()"
+    *ngIf="cells.length === 0"
   >
     <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action"
       >add</mat-icon
