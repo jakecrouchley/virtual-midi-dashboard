@@ -38,8 +38,12 @@ export class DataService {
     });
   }
 
-  appendCell(cell: ICell) {
+  addCell(cell: ICell) {
     this.cells$.next([...this.cells$.value, cell]);
+  }
+
+  getCellAtIndex(index: number) {
+    return this.cells$.value.find((cell) => cell.index === index);
   }
 
   removeCell(index: number) {

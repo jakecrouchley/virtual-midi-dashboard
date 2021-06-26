@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Overlay } from '@angular/cdk/overlay';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { InsertCellDialogComponent } from './components/insert-cell-dialog/insert-cell-dialog.component';
@@ -15,20 +16,22 @@ import { MidiService } from './services/midi.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
   NUM_ROWS = 3;
 
   cellSideLength = window.innerHeight / this.NUM_ROWS;
-  defaultGridCount =
-    Math.floor(window.innerWidth / this.cellSideLength) * this.NUM_ROWS;
+  defaultGridCount = 12; // Dynamic option: Math.floor(window.innerWidth / this.cellSideLength) * this.NUM_ROWS;
 
   cells: ICell[] = [];
 
   constructor(
     private dataService: DataService,
     private midiService: MidiService,
-    private dialog: MatDialog
-  ) {}
+    private dialog: MatDialog,
+    private overlay: Overlay
+  ) {
+    this.overlay.create();
+  }
 
   ngOnInit() {
     this.dataService.cells$.subscribe((cells) => {
@@ -47,6 +50,16 @@ export class AppComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit() {
+    // This stops the right click event from triggering the context menu
+    const overlay = document
+      .getElementsByClassName('cdk-overlay-container')
+      .item(0) as HTMLElement;
+    overlay.oncontextmenu = (event) => {
+      event.preventDefault();
+    };
+  }
+
   // appendNewCell() {
   //   this.dataService.appendCell({
   //     note: 64,
@@ -56,8 +69,9 @@ export class AppComponent implements OnInit {
   //   });
   // }
 
-  performCellAction(cell?: ICell, index?: number) {
-    if (cell) {
+  onCellMousedown(event: MouseEvent, cell?: ICell, index?: number) {
+    event.preventDefault();
+    if (cell && event.button !== 2) {
       let cellAction;
       switch (cell.type) {
         case 'midi':
@@ -70,16 +84,29 @@ export class AppComponent implements OnInit {
           cellAction = this.midiService.sendMidiNoteOn(cell as IMIDICell);
       }
       cellAction.subscribe((_) => {});
+    } else if (event.button === 2) {
+      this.openDialog(index, cell);
     } else {
       this.openDialog(index);
     }
   }
 
-  onRightClick(event: Event, index?: number) {
-    event.preventDefault();
-    if (index) {
-      this.dataService.removeCell(index);
+  onCellMouseup(cell?: ICell, index?: number) {
+    if (cell) {
+      let cellAction;
+      switch (cell.type) {
+        case 'midi':
+          cellAction = this.midiService.sendMidiNoteOff(cell as IMIDICell);
+          break;
+        default:
+          cellAction = this.midiService.sendMidiNoteOff(cell as IMIDICell);
+      }
+      cellAction.subscribe((_) => {});
     }
+  }
+
+  onCellContextMenu(event: Event) {
+    event.preventDefault();
   }
 
   getCellInfoText(cell: ICell) {
@@ -92,10 +119,11 @@ export class AppComponent implements OnInit {
     }
   }
 
-  openDialog(atIndex?: number) {
+  openDialog(atIndex?: number, withCell?: ICell) {
     const dialogRef = this.dialog.open(InsertCellDialogComponent, {
       data: {
         index: atIndex ?? 0,
+        cell: withCell,
       },
     });
 
@@ -103,7 +131,7 @@ export class AppComponent implements OnInit {
       console.log(`Dialog result: ${result}`);
       if (result) {
         const cell = result as ICell;
-        this.dataService.appendCell(cell);
+        this.dataService.addCell(cell);
       }
     });
   }

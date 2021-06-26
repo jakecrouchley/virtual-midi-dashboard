@@ -13,6 +13,11 @@
     <!-- MIDI Form -->
     <div *ngIf="newCellForm.controls.type.value === 'midi'">
       <mat-form-field appearance="fill">
+        <mat-label>Label</mat-label>
+        <input formControlName="label" type="string" matInput />
+      </mat-form-field>
+      <br />
+      <mat-form-field appearance="fill">
         <mat-label>Note</mat-label>
         <input formControlName="note" min="0" type="number" matInput required />
       </mat-form-field>
@@ -32,6 +37,10 @@
 
     <!-- CC Form -->
     <div *ngIf="newCellForm.controls.type.value === 'cc'">
+      <mat-form-field appearance="fill">
+        <mat-label>Label</mat-label>
+        <input formControlName="label" type="string" matInput />
+      </mat-form-field>
       <mat-form-field appearance="fill">
         <mat-label>Controller</mat-label>
         <input
@@ -104,6 +113,6 @@
     [mat-dialog-close]="newCellForm.value"
     cdkFocusInitial
   >
-    Add
+    {{ isEditMode ? "Save" : "Add" }}
   </button>
 </mat-dialog-actions>

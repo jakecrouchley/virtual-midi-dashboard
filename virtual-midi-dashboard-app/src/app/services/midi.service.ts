@@ -30,10 +30,11 @@ export class MidiService {
   constructor(private http: HttpClient) {}
 
   sendMidiNoteOn(cell: IMIDICell) {
-    return this.http.post(this.getBaseURL() + '/send-midi', {
-      note: cell.note,
-      velocity: cell.velocity,
-    });
+    return this.http.post(this.getBaseURL() + '/send-midi', cell);
+  }
+
+  sendMidiNoteOff(cell: IMIDICell) {
+    return this.http.post(this.getBaseURL() + '/send-midi-off', cell);
   }
 
   sendCC(cell: ICCCell) {

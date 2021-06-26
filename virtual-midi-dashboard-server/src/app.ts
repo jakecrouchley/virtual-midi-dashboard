@@ -38,8 +38,8 @@ export class App {
 
     this.app.post("/send-midi", (req, res) => {
       const params = req.body;
-      const { note, velocity, iconName } = params;
-      console.log(iconName);
+      const { note, velocity, label } = params;
+      console.log(`${label} on`);
 
       const noteData: Note = {
         note,
@@ -47,6 +47,20 @@ export class App {
         channel: this.midiChannel,
       };
       this.virtualOutput?.send("noteon", noteData);
+      return res.status(200).send();
+    });
+
+    this.app.post("/send-midi-off", (req, res) => {
+      const params = req.body;
+      const { note, velocity, label } = params;
+      console.log(`${label} off`);
+
+      const noteData: Note = {
+        note,
+        velocity,
+        channel: this.midiChannel,
+      };
+      this.virtualOutput?.send("noteoff", noteData);
       return res.status(200).send();
     });
 

@@ -5,8 +5,9 @@
     *ngFor="let cell of cells; let i = index"
     [style.width.px]="cellSideLength"
     [style.height.px]="cellSideLength"
-    (click)="performCellAction(cell, i)"
-    (contextmenu)="onRightClick($event, i)"
+    (mousedown)="onCellMousedown($event, cell, i); $event.stopPropagation()"
+    (mouseup)="onCellMouseup(cell, i)"
+    (contextmenu)="onCellContextMenu($event); $event.stopPropagation()"
   >
     <ng-container *ngIf="cell; else noCell">
       <mat-icon
@@ -15,6 +16,7 @@
         aria-label="Cell Action"
         >{{ cell.iconName }}</mat-icon
       >
+      <span>{{ cell.label }}</span>
       <span>{{ cell.type }} {{ getCellInfoText(cell) }}</span>
     </ng-container>
     <ng-template #noCell>

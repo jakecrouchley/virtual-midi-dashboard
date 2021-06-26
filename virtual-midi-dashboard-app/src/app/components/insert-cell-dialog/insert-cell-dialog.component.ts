@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { DataService, ICell } from 'src/app/services/data.service';
@@ -24,6 +24,7 @@ export const _filter = (opt: string[], value: string): string[] => {
 })
 export class InsertCellDialogComponent implements OnInit {
   newCellForm = this.fb.group({
+    label: [''],
     type: ['midi', Validators.required],
     note: ['', Validators.required],
     velocity: [127, Validators.required],
@@ -38,12 +39,18 @@ export class InsertCellDialogComponent implements OnInit {
 
   index: number;
 
+  isEditMode = false;
+
   constructor(
     private fb: FormBuilder,
     private dataService: DataService,
-    @Inject(MAT_DIALOG_DATA) public data: { index: number }
+    @Inject(MAT_DIALOG_DATA) public data: { index: number; cell?: ICell }
   ) {
     this.index = data.index;
+    if (data.cell) {
+      this.isEditMode = true;
+      this.newCellForm.setValue(data.cell);
+    }
     this.newCellForm.get('index')?.setValue(this.index);
     this.matIconList$ = this.newCellForm.get('iconName')!.valueChanges.pipe(
       startWith(''),
