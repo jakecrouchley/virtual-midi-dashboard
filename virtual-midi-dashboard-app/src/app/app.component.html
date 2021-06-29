@@ -1,4 +1,17 @@
-<div class="top-row"></div>
+<div class="top-row">
+  <button mat-flat-button (click)="onNewClicked()">New</button>
+  <span class="divider"></span>
+  <button mat-flat-button (click)="onDownloadClicked()">Download</button>
+  <span class="divider"></span>
+  <label class="load-file-label" for="load-file">Load: </label>
+  <input
+    #fileInput
+    class="file-input"
+    type="file"
+    id="load-file"
+    (change)="handleFileInput($event)"
+  />
+</div>
 <div class="cell-container" [style.width.px]="cellSideLength">
   <div
     class="cell"
@@ -45,3 +58,15 @@
     <span>Install PWA</span>
   </div> -->
 </div>
+
+<ng-template #confirmNewDialog>
+  <h2 matDialogTitle>Confirm</h2>
+  <p matDialogContent>
+    Are you sure you want to start a new dashboard? The current data will be
+    lost unless you export first.
+  </p>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button [mat-dialog-close]="true">Confirm</button>
+  </mat-dialog-actions>
+</ng-template>

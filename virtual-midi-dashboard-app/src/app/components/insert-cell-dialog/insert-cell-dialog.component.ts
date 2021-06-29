@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { DataService, ICell } from 'src/app/services/data.service';
 import { matIconList } from './icon-list';
 import { map, startWith } from 'rxjs/operators';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface IconGroup {
   group: string;
@@ -51,6 +51,14 @@ export class InsertCellDialogComponent implements OnInit {
       this.isEditMode = true;
       this.newCellForm.setValue(data.cell);
     }
+
+    const recentlyUsedIcons = dataService.getRecentlyUsedIconList();
+    const recentlyUsedIconsGroup = {
+      group: 'Recently Used',
+      names: [...recentlyUsedIcons],
+    };
+    this.matIconList = [recentlyUsedIconsGroup, ...this.matIconList];
+
     this.newCellForm.get('index')?.setValue(this.index);
     this.matIconList$ = this.newCellForm.get('iconName')!.valueChanges.pipe(
       startWith(''),

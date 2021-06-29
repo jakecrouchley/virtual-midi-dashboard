@@ -2,6 +2,8 @@ import { Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 export const CELL_LOCAL_STORAGE_KEY = 'CELLS';
+export const RECENTLY_USED_ICONS_KEY = 'RECENTLTY_USED_ICONS';
+
 export interface ICell {
   label: string;
   type: 'midi' | 'cc';
@@ -38,6 +40,10 @@ export class DataService {
     });
   }
 
+  setCells(cells: ICell[]) {
+    this.cells$.next(cells);
+  }
+
   addCell(cell: ICell) {
     this.cells$.next([...this.cells$.value, cell]);
   }
@@ -70,6 +76,33 @@ export class DataService {
       }
     } else {
       return null;
+    }
+  }
+
+  getRecentlyUsedIconList(): string[] {
+    // Add stored recently used icons to list
+    const recentlyUsedIconsString = localStorage.getItem(
+      RECENTLY_USED_ICONS_KEY
+    );
+    if (recentlyUsedIconsString) {
+      return JSON.parse(recentlyUsedIconsString) as string[];
+    }
+    return [];
+  }
+
+  addIconToRecentlyUsedList(iconName: string) {
+    let recentlyUsedIcons = this.getRecentlyUsedIconList();
+    if (recentlyUsedIcons) {
+      recentlyUsedIcons = recentlyUsedIcons.filter(
+        (recentIconName) => recentIconName !== iconName
+      );
+      recentlyUsedIcons.splice(0, 0, iconName);
+      localStorage.setItem(
+        RECENTLY_USED_ICONS_KEY,
+        JSON.stringify(recentlyUsedIcons.slice(0, 5))
+      );
+    } else {
+      localStorage.setItem(RECENTLY_USED_ICONS_KEY, JSON.stringify([iconName]));
     }
   }
 }

@@ -1,8 +1,35 @@
 <h2 mat-dialog-title>Add #{{ index }} Cell Action</h2>
 <mat-dialog-content class="mat-typography">
   <form class="dialog-form" [formGroup]="newCellForm">
+    <mat-form-field appearance="fill">
+      <mat-label>Label</mat-label>
+      <input formControlName="label" type="string" matInput />
+    </mat-form-field>
+    <br />
+    <mat-form-field appearance="fill">
+      <mat-label>Icon</mat-label>
+      <input
+        type="text"
+        matInput
+        formControlName="iconName"
+        [matAutocomplete]="autoGroup"
+      />
+      <mat-autocomplete #autoGroup="matAutocomplete">
+        <mat-optgroup
+          *ngFor="let group of matIconList$ | async"
+          [label]="group.group"
+        >
+          <mat-option *ngFor="let name of group.names" [value]="name">
+            <div class="icon-select-option">
+              <span>{{ name }}</span
+              ><mat-icon>{{ name }}</mat-icon>
+            </div>
+          </mat-option>
+        </mat-optgroup>
+      </mat-autocomplete>
+    </mat-form-field>
     <div>
-      <label>Event type: </label>
+      <mat-label>Event type: </mat-label>
       <mat-radio-group formControlName="type">
         <mat-radio-button value="midi">MIDI</mat-radio-button>
         <mat-radio-button value="cc">CC</mat-radio-button>
@@ -12,11 +39,6 @@
 
     <!-- MIDI Form -->
     <div *ngIf="newCellForm.controls.type.value === 'midi'">
-      <mat-form-field appearance="fill">
-        <mat-label>Label</mat-label>
-        <input formControlName="label" type="string" matInput />
-      </mat-form-field>
-      <br />
       <mat-form-field appearance="fill">
         <mat-label>Note</mat-label>
         <input formControlName="note" min="0" type="number" matInput required />
@@ -37,10 +59,6 @@
 
     <!-- CC Form -->
     <div *ngIf="newCellForm.controls.type.value === 'cc'">
-      <mat-form-field appearance="fill">
-        <mat-label>Label</mat-label>
-        <input formControlName="label" type="string" matInput />
-      </mat-form-field>
       <mat-form-field appearance="fill">
         <mat-label>Controller</mat-label>
         <input
@@ -66,42 +84,6 @@
       </mat-form-field>
       <br />
     </div>
-    <mat-form-field appearance="fill">
-      <mat-label>Icon</mat-label>
-      <!-- <mat-select formControlName="iconName">
-        <mat-optgroup
-          *ngFor="let iconGroup of matIconList | keyvalue"
-          [label]="iconGroup.key"
-        >
-          <mat-option *ngFor="let icon of iconGroup.value" value="{{ icon }}">
-            <div class="icon-select-option">
-              <span>{{ icon }}</span
-              ><mat-icon>{{ icon }}</mat-icon>
-            </div>
-          </mat-option>
-        </mat-optgroup>
-      </mat-select>
-      <mat-label>States Group</mat-label> -->
-      <input
-        type="text"
-        matInput
-        formControlName="iconName"
-        [matAutocomplete]="autoGroup"
-      />
-      <mat-autocomplete #autoGroup="matAutocomplete">
-        <mat-optgroup
-          *ngFor="let group of matIconList$ | async"
-          [label]="group.group"
-        >
-          <mat-option *ngFor="let name of group.names" [value]="name">
-            <div class="icon-select-option">
-              <span>{{ name }}</span
-              ><mat-icon>{{ name }}</mat-icon>
-            </div>
-          </mat-option>
-        </mat-optgroup>
-      </mat-autocomplete>
-    </mat-form-field>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">

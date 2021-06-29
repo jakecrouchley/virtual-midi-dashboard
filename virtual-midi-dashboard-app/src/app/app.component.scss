@@ -1,5 +1,30 @@
 $icon-size: 72px;
+$menu-bar-size: 32px;
+$menu-bar-padding: 2px;
 
+.top-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: $menu-bar-size;
+  padding-bottom: $menu-bar-padding;
+
+  .load-file-label {
+    margin-left: 16px;
+  }
+
+  .divider {
+    width: 0;
+    height: 100%;
+    margin: 0 8px;
+
+    border: 1px solid #e3e3e3;
+  }
+}
+
+.file-input {
+  margin-left: 8px;
+}
 .cell-container {
   display: flex;
   flex-direction: column;
