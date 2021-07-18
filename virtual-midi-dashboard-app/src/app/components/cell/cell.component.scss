@@ -1,6 +1,8 @@
 $icon-size: 72px;
 
 .cell {
+  position: relative;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -17,6 +19,28 @@ $icon-size: 72px;
 
   &:hover {
     background-color: #eee;
+  }
+
+  .type {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    padding: 2px 8px;
+
+    color: white;
+
+    text-transform: uppercase;
+
+    background-color: #000;
+
+    border-top-right-radius: 8px;
+  }
+
+  .info {
+    position: absolute;
+    right: 0;
+    bottom: 0;
   }
 }
 

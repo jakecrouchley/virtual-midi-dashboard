@@ -11,7 +11,8 @@
       cell.iconName
     }}</mat-icon>
     <span>{{ cell.label }}</span>
-    <span>{{ cell.type }} {{ getCellInfoText() }}</span>
+    <span class="type">{{ cell.type }}</span>
+    <span class="info">{{ getCellInfoText() }}</span>
   </ng-container>
   <ng-template #noCell>
     <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action"
