@@ -1,0 +1,28 @@
+$icon-size: 72px;
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 2px;
+
+  border: solid 2px #eee;
+  border-radius: 8px;
+  cursor: pointer;
+
+  user-select: none;
+
+  &:hover {
+    background-color: #eee;
+  }
+}
+
+.cell-icon {
+  width: $icon-size;
+  height: $icon-size;
+
+  font-size: $icon-size;
+}

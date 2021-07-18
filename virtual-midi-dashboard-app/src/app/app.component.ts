@@ -8,17 +8,15 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Observable, of } from 'rxjs';
-import { InsertCellDialogComponent } from './components/insert-cell-dialog/insert-cell-dialog.component';
 import {
   CELL_LOCAL_STORAGE_KEY,
   DataService,
-  ICCCell,
   ICell,
-  IMIDICell,
 } from './services/data.service';
-import { MidiService } from './services/midi.service';
 
+export const NUM_ROWS = 3;
+// Cell edge length = (window - navbar height and padding) / desired no. of rows
+export const cellSideLength = (window.innerHeight - 34) / NUM_ROWS;
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -28,17 +26,13 @@ export class AppComponent implements OnInit, AfterViewInit {
   @ViewChild('confirmNewDialog') confirmNewDialog!: TemplateRef<any>;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
-  NUM_ROWS = 3;
-
-  // Cell edge length = (window - navbar height and padding) / desired no. of rows
-  cellSideLength = (window.innerHeight - 34) / this.NUM_ROWS;
   defaultGridCount = 12; // Dynamic option: Math.floor(window.innerWidth / this.cellSideLength) * this.NUM_ROWS;
 
   cells: ICell[] = [];
+  cellSideLength = cellSideLength;
 
   constructor(
     private dataService: DataService,
-    private midiService: MidiService,
     private dialog: MatDialog,
     private overlay: Overlay
   ) {
@@ -70,77 +64,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     overlay.oncontextmenu = (event) => {
       event.preventDefault();
     };
-  }
-
-  onCellMousedown(event: MouseEvent, cell?: ICell, index?: number) {
-    event.preventDefault();
-    if (cell && event.button !== 2) {
-      let cellAction;
-      switch (cell.type) {
-        case 'midi':
-          cellAction = this.midiService.sendMidiNoteOn(cell as IMIDICell);
-          break;
-        case 'cc':
-          cellAction = this.midiService.sendCC(cell as ICCCell);
-          break;
-        default:
-          cellAction = this.midiService.sendMidiNoteOn(cell as IMIDICell);
-      }
-      cellAction.subscribe((_) => {});
-    } else if (event.button === 2) {
-      this.openDialog(index, cell);
-    } else {
-      this.openDialog(index);
-    }
-  }
-
-  onCellMouseup(cell?: ICell, index?: number) {
-    if (cell) {
-      let cellAction;
-      switch (cell.type) {
-        case 'midi':
-          cellAction = this.midiService.sendMidiNoteOff(cell as IMIDICell);
-          break;
-        case 'cc':
-          cellAction = of('');
-          break;
-        default:
-          cellAction = this.midiService.sendMidiNoteOff(cell as IMIDICell);
-      }
-      cellAction.subscribe((_) => {});
-    }
-  }
-
-  onCellContextMenu(event: Event) {
-    event.preventDefault();
-  }
-
-  getCellInfoText(cell: ICell) {
-    if (cell.type === 'midi') {
-      const midiCell = cell as IMIDICell;
-      return `${midiCell.note}, ${midiCell.velocity}`;
-    } else {
-      const ccCell = cell as ICCCell;
-      return `${ccCell.controller}, ${ccCell.value}`;
-    }
-  }
-
-  openDialog(atIndex?: number, withCell?: ICell) {
-    const dialogRef = this.dialog.open(InsertCellDialogComponent, {
-      data: {
-        index: atIndex ?? 0,
-        cell: withCell,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      console.log(`Dialog result: ${result}`);
-      if (result) {
-        const cell = result as ICell;
-        this.dataService.addCell(cell);
-        this.dataService.addIconToRecentlyUsedList(cell.iconName);
-      }
-    });
   }
 
   // Menu Actions

@@ -13,32 +13,12 @@
   />
 </div>
 <div class="cell-container" [style.width.px]="cellSideLength">
-  <div
-    class="cell"
+  <app-cell
     *ngFor="let cell of cells; let i = index"
-    [style.width.px]="cellSideLength"
-    [style.height.px]="cellSideLength"
-    (mousedown)="onCellMousedown($event, cell, i); $event.stopPropagation()"
-    (mouseup)="onCellMouseup(cell, i)"
-    (contextmenu)="onCellContextMenu($event); $event.stopPropagation()"
-  >
-    <ng-container *ngIf="cell; else noCell">
-      <mat-icon
-        class="cell-icon"
-        aria-hidden="false"
-        aria-label="Cell Action"
-        >{{ cell.iconName }}</mat-icon
-      >
-      <span>{{ cell.label }}</span>
-      <span>{{ cell.type }} {{ getCellInfoText(cell) }}</span>
-    </ng-container>
-    <ng-template #noCell>
-      <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action"
-        >add</mat-icon
-      >
-    </ng-template>
-  </div>
-  <div
+    [cell]="cell"
+    [index]="i"
+  ></app-cell>
+  <!-- <div
     class="cell"
     [style.width.px]="cellSideLength"
     [style.height.px]="cellSideLength"
@@ -48,7 +28,7 @@
     <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action"
       >add</mat-icon
     >
-  </div>
+  </div> -->
   <!-- <div
     class="cell"
     [style.width.px]="cellSideLength"

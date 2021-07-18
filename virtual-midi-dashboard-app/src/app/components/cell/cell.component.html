@@ -1,0 +1,21 @@
+<div
+  class="cell"
+  [style.width.px]="cellSideLength"
+  [style.height.px]="cellSideLength"
+  (mousedown)="onCellMousedown($event); $event.stopPropagation()"
+  (mouseup)="onCellMouseup()"
+  (contextmenu)="onCellContextMenu($event); $event.stopPropagation()"
+>
+  <ng-container *ngIf="cell; else noCell">
+    <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action">{{
+      cell.iconName
+    }}</mat-icon>
+    <span>{{ cell.label }}</span>
+    <span>{{ cell.type }} {{ getCellInfoText() }}</span>
+  </ng-container>
+  <ng-template #noCell>
+    <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action"
+      >add</mat-icon
+    >
+  </ng-template>
+</div>

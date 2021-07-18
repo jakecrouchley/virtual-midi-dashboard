@@ -1,4 +1,3 @@
-$icon-size: 72px;
 $menu-bar-size: 32px;
 $menu-bar-padding: 2px;
 
@@ -31,31 +30,5 @@ $menu-bar-padding: 2px;
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: flex-start;
-  height: 100%;
-}
-.cell {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  height: 100%;
-  padding: 2px;
-
-  border: solid 2px #eee;
-  border-radius: 8px;
-  cursor: pointer;
-
-  user-select: none;
-
-  &:hover {
-    background-color: #eee;
-  }
-}
-
-.cell-icon {
-  width: $icon-size;
-  height: $icon-size;
-
-  font-size: $icon-size;
+  height: calc(100% - #{$menu-bar-size});
 }

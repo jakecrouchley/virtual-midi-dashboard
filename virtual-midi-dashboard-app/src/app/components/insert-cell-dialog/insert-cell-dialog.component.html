@@ -1,6 +1,17 @@
-<h2 mat-dialog-title>Add #{{ index }} Cell Action</h2>
+<h2 mat-dialog-title>
+  Add #{{ newCellForm.controls.index.value }} Cell Action
+</h2>
 <mat-dialog-content class="mat-typography">
   <form class="dialog-form" [formGroup]="newCellForm">
+    <mat-form-field appearance="fill">
+      <mat-label>Cell Type</mat-label>
+      <mat-select formControlName="cellType">
+        <mat-option *ngFor="let type of CELL_TYPES" [value]="type">{{
+          type | titlecase
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <br />
     <mat-form-field appearance="fill">
       <mat-label>Label</mat-label>
       <input formControlName="label" type="string" matInput />

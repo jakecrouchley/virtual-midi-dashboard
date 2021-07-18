@@ -11,6 +11,8 @@ export interface IconGroup {
   names: string[];
 }
 
+export const CELL_TYPES = ['button', 'knob', 'slider'];
+
 export const _filter = (opt: string[], value: string): string[] => {
   const filterValue = value.toLowerCase();
 
@@ -24,6 +26,7 @@ export const _filter = (opt: string[], value: string): string[] => {
 })
 export class InsertCellDialogComponent implements OnInit {
   newCellForm = this.fb.group({
+    cellType: [CELL_TYPES[0], Validators.required],
     label: [''],
     type: ['midi', Validators.required],
     note: ['', Validators.required],
@@ -34,10 +37,10 @@ export class InsertCellDialogComponent implements OnInit {
     index: [0],
   });
 
+  CELL_TYPES = CELL_TYPES;
+
   matIconList: IconGroup[] = matIconList;
   matIconList$: Observable<IconGroup[]>;
-
-  index: number;
 
   isEditMode = false;
 
@@ -46,20 +49,19 @@ export class InsertCellDialogComponent implements OnInit {
     private dataService: DataService,
     @Inject(MAT_DIALOG_DATA) public data: { index: number; cell?: ICell }
   ) {
-    this.index = data.index;
     if (data.cell) {
       this.isEditMode = true;
       this.newCellForm.setValue(data.cell);
     }
 
-    const recentlyUsedIcons = dataService.getRecentlyUsedIconList();
+    const recentlyUsedIcons = this.dataService.getRecentlyUsedIconList();
     const recentlyUsedIconsGroup = {
       group: 'Recently Used',
       names: [...recentlyUsedIcons],
     };
     this.matIconList = [recentlyUsedIconsGroup, ...this.matIconList];
 
-    this.newCellForm.get('index')?.setValue(this.index);
+    this.newCellForm.get('index')?.setValue(data.index);
     this.matIconList$ = this.newCellForm.get('iconName')!.valueChanges.pipe(
       startWith(''),
       map((value) => this._filterGroup(value))

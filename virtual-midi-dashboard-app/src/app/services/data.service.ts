@@ -1,10 +1,12 @@
 import { Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { CELL_TYPES } from '../components/insert-cell-dialog/insert-cell-dialog.component';
 
 export const CELL_LOCAL_STORAGE_KEY = 'CELLS';
 export const RECENTLY_USED_ICONS_KEY = 'RECENTLTY_USED_ICONS';
 
 export interface ICell {
+  cellType: typeof CELL_TYPES[number];
   label: string;
   type: 'midi' | 'cc';
   iconName: string;
