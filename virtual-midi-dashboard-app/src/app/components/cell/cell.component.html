@@ -1,22 +1,37 @@
 <div
-  class="cell"
+  class="cell cell-button"
   [style.width.px]="cellSideLength"
   [style.height.px]="cellSideLength"
-  (mousedown)="onCellMousedown($event); $event.stopPropagation()"
-  (mouseup)="onCellMouseup()"
   (contextmenu)="onCellContextMenu($event); $event.stopPropagation()"
 >
   <ng-container *ngIf="cell; else noCell">
-    <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action">{{
-      cell.iconName
-    }}</mat-icon>
-    <span>{{ cell.label }}</span>
-    <span class="type">{{ cell.type }}</span>
-    <span class="info">{{ getCellInfoText() }}</span>
+    <div
+      *ngIf="cell.cellType === 'button'"
+      class="cell-inner"
+      (mousedown)="onCellMousedown($event); $event.stopPropagation()"
+      (mouseup)="onCellMouseup()"
+      (mouseleave)="onCellMouseup()"
+    >
+      <mat-icon
+        class="cell-icon"
+        aria-hidden="false"
+        aria-label="Cell Action"
+        >{{ cell.iconName }}</mat-icon
+      >
+      <span class="label">{{ cell.label }}</span>
+      <span class="type">{{ cell.type }}</span>
+      <span class="info">{{ getCellInfoText() }}</span>
+    </div>
   </ng-container>
   <ng-template #noCell>
-    <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action"
-      >add</mat-icon
+    <div
+      class="cell-inner"
+      (mousedown)="onCellMousedown($event); $event.stopPropagation()"
+      (mouseup)="onCellMouseup()"
     >
+      <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action"
+        >add</mat-icon
+      >
+    </div>
   </ng-template>
 </div>
