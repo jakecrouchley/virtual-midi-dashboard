@@ -4,7 +4,7 @@ import { Server } from "http";
 import path from "path";
 import { ControlChange, Note, Output } from "easymidi";
 
-export class App {
+export class MidiApp {
   app = express();
   port = 8080;
 
