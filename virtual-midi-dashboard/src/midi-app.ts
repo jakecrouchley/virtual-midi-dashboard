@@ -29,7 +29,7 @@ export class MidiApp {
       express.static(
         path.join(
           __dirname,
-          "../../virtual-midi-dashboard-app/dist/virtual-midi-dashboard"
+          "../virtual-midi-dashboard-app/dist/virtual-midi-dashboard"
         )
       )
     );

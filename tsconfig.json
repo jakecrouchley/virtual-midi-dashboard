@@ -12,9 +12,10 @@
           "*": [
               "node_modules/*"
           ]
-      }
+      },
+      "jsx": "react",
   },
   "include": [
       "src/**/*"
-  ]
+, "virtual-midi-dashboard/src/preload.ts", "virtual-midi-dashboard/src/midi-app.ts"  ]
 }
