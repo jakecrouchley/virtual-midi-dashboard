@@ -24,12 +24,14 @@ export class MidiApp {
   setupServer(): Server {
     this.app.use(cors());
 
+    console.log(__dirname);
+
     this.app.use(
       "/",
       express.static(
         path.join(
           __dirname,
-          "../../virtual-midi-dashboard-app/dist/virtual-midi-dashboard"
+          "../virtual-midi-dashboard-app/dist/virtual-midi-dashboard"
         )
       )
     );
