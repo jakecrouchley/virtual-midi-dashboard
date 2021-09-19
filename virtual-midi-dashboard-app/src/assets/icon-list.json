@@ -1101,10 +1101,7 @@
     "videogame_asset_off",
     "watch"
   ],
-  "home": [
-    "sensor_door",
-    "sensor_window"
-  ],
+  "home": ["sensor_door", "sensor_window"],
   "image": [
     "10mp",
     "11mp",
