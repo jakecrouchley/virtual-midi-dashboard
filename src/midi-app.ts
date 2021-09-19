@@ -24,8 +24,6 @@ export class MidiApp {
   setupServer(): Server {
     this.app.use(cors());
 
-    console.log(__dirname);
-
     this.app.use(
       "/",
       express.static(
