@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 import { cellSideLength } from 'src/app/app.component';
 import {
   DataService,
+  DATA_VERSION,
   ICCCell,
   ICell,
   IMIDICell,
@@ -96,6 +97,7 @@ export class CellComponent implements OnInit {
       console.log(`Dialog result: `, result);
       if (result) {
         const cell = result as ICell;
+        cell.version = DATA_VERSION;
         this.dataService.addCell(cell);
         this.dataService.addIconToRecentlyUsedList(cell.iconName);
       }

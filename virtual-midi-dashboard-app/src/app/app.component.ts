@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import {
   CELL_LOCAL_STORAGE_KEY,
   DataService,
+  DATA_VERSION,
   ICell,
 } from './services/data.service';
 
@@ -30,6 +31,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   cells: ICell[] = [];
   cellSideLength = cellSideLength;
+
+  dataVersion = DATA_VERSION;
 
   constructor(
     private dataService: DataService,
