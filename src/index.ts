@@ -1,7 +1,7 @@
 import path from "path";
 import { MidiApp } from "./midi-app";
 
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, webContents } = require("electron");
 
 const midiApp = new MidiApp();
 

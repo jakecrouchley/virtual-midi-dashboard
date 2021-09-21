@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import Button from "./Button";
+import EventList from "./eventList";
 
 export default class Home extends Component {
   openDashboard() {
-    open("http://localhost:8080/", "_blank");
+    open("http://localhost:8080/", "_blank", "width=700");
   }
 
   render() {
@@ -12,11 +13,12 @@ export default class Home extends Component {
         style={{
           height: "100%",
           display: "flex",
-          justifyContent: "center",
+          flexDirection: "column",
           alignItems: "center",
         }}
       >
         <Button title={"Open Dashboard"} action={this.openDashboard}></Button>
+        <EventList events={[{ description: "hello world" }]}></EventList>
       </div>
     );
   }
