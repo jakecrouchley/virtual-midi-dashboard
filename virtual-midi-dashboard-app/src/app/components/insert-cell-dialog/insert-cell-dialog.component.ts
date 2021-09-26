@@ -1,17 +1,16 @@
 import { Component, Inject, OnInit, ViewContainerRef } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { DataService, ICell } from 'src/app/services/data.service';
+import { Observable, of } from 'rxjs';
+import { DataService } from 'src/app/services/data.service';
 import { matIconList } from './icon-list';
 import { map, startWith } from 'rxjs/operators';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { CELL_TYPES, ICell } from '../../../../../common';
 
 export interface IconGroup {
   group: string;
   names: string[];
 }
-
-export const CELL_TYPES = ['button', 'knob', 'slider'];
 
 export const _filter = (opt: string[], value: string): string[] => {
   const filterValue = value.toLowerCase();
@@ -62,14 +61,19 @@ export class InsertCellDialogComponent implements OnInit {
     this.matIconList = [recentlyUsedIconsGroup, ...this.matIconList];
 
     this.newCellForm.get('index')?.setValue(data.index);
-    this.matIconList$ = this.newCellForm.get('iconName')!.valueChanges.pipe(
-      startWith(''),
-      map((value) => this._filterGroup(value))
-    );
+    const iconNameControl = this.newCellForm.get('iconName');
+    if (iconNameControl) {
+      this.matIconList$ = iconNameControl.valueChanges.pipe(
+        startWith(''),
+        map((value) => this._filterGroup(value))
+      );
+    } else {
+      this.matIconList$ = of([]);
+    }
   }
 
   ngOnInit(): void {
-    this.newCellForm.get('type')!.valueChanges.subscribe((val) => {
+    this.newCellForm.get('type')?.valueChanges.subscribe((val) => {
       if (val === 'midi') {
         this.newCellForm.controls.note.setValidators([Validators.required]);
         this.newCellForm.controls.velocity.setValidators([Validators.required]);

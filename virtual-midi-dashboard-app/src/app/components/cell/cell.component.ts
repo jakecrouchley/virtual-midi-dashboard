@@ -2,12 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { cellSideLength } from 'src/app/app.component';
-import {
-  DataService,
-  ICCCell,
-  ICell,
-  IMIDICell,
-} from 'src/app/services/data.service';
+import { DataService } from 'src/app/services/data.service';
+import { ICell, IMIDICell, ICCCell, DATA_VERSION } from '../../../../../common';
 import { MidiService } from 'src/app/services/midi.service';
 import { InsertCellDialogComponent } from '../insert-cell-dialog/insert-cell-dialog.component';
 
@@ -33,19 +29,16 @@ export class CellComponent implements OnInit {
   onCellMousedown(event: MouseEvent) {
     event.preventDefault();
     if (this.cell && event.button !== 2) {
-      let cellAction;
-
       switch (this.cell.type) {
         case 'midi':
-          cellAction = this.midiService.sendMidiNoteOn(this.cell as IMIDICell);
+          this.midiService.sendMidiNoteOn(this.cell as IMIDICell);
           break;
         case 'cc':
-          cellAction = this.midiService.sendCC(this.cell as ICCCell);
+          this.midiService.sendCC(this.cell as ICCCell);
           break;
         default:
-          cellAction = this.midiService.sendMidiNoteOn(this.cell as IMIDICell);
+          this.midiService.sendMidiNoteOn(this.cell as IMIDICell);
       }
-      cellAction.subscribe((_) => {});
     } else if (event.button === 2) {
       this.openDialog();
     } else {
@@ -55,18 +48,16 @@ export class CellComponent implements OnInit {
 
   onCellMouseup() {
     if (this.cell) {
-      let cellAction;
       switch (this.cell.type) {
         case 'midi':
-          cellAction = this.midiService.sendMidiNoteOff(this.cell as IMIDICell);
+          this.midiService.sendMidiNoteOff(this.cell as IMIDICell);
           break;
         case 'cc':
-          cellAction = of('');
+          // TODO: Build this in
           break;
         default:
-          cellAction = this.midiService.sendMidiNoteOff(this.cell as IMIDICell);
+          this.midiService.sendMidiNoteOff(this.cell as IMIDICell);
       }
-      cellAction.subscribe((_) => {});
     }
   }
 
@@ -96,6 +87,7 @@ export class CellComponent implements OnInit {
       console.log(`Dialog result: `, result);
       if (result) {
         const cell = result as ICell;
+        cell.version = DATA_VERSION;
         this.dataService.addCell(cell);
         this.dataService.addIconToRecentlyUsedList(cell.iconName);
       }

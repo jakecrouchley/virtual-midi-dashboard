@@ -8,9 +8,8 @@ describe('InsertCellDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ InsertCellDialogComponent ]
-    })
-    .compileComponents();
+      declarations: [InsertCellDialogComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

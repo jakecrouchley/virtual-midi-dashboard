@@ -1,27 +1,11 @@
 import { Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { CELL_TYPES } from '../components/insert-cell-dialog/insert-cell-dialog.component';
+import { ICell, DATA_VERSION } from '../../../../common';
+
+import * as semver from 'semver';
 
 export const CELL_LOCAL_STORAGE_KEY = 'CELLS';
 export const RECENTLY_USED_ICONS_KEY = 'RECENTLTY_USED_ICONS';
-
-export interface ICell {
-  cellType: typeof CELL_TYPES[number];
-  label: string;
-  type: 'midi' | 'cc';
-  iconName: string;
-  index: number;
-}
-
-export interface IMIDICell extends ICell {
-  note: number;
-  velocity: number;
-}
-
-export interface ICCCell extends ICell {
-  controller: number;
-  value: number;
-}
 
 @Injectable({
   providedIn: 'root',
@@ -43,7 +27,11 @@ export class DataService {
   }
 
   setCells(cells: ICell[]) {
-    this.cells$.next(cells);
+    // TODO: condense this in one place and alert user that invalid cells will be omitted
+    const validCells = cells.filter(
+      (cell: ICell) => cell.version && semver.gte(cell.version, DATA_VERSION)
+    );
+    this.cells$.next(validCells);
   }
 
   addCell(cell: ICell) {
@@ -71,7 +59,10 @@ export class DataService {
     if (storedCells) {
       try {
         const cells = JSON.parse(storedCells);
-        return cells;
+        return cells.filter(
+          (cell: ICell) =>
+            cell.version && semver.gte(cell.version, DATA_VERSION)
+        );
       } catch (error) {
         console.error(error);
         return null;
