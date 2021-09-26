@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Button from "./Button";
 import EventList from "./eventList";
+import ServerDetails from "./ServerDetails";
 
 export default class Home extends Component<any, any> {
   constructor(props: any) {
@@ -25,9 +26,7 @@ export default class Home extends Component<any, any> {
           alignItems: "center",
         }}
       >
-        <p>
-          Server running on <a target="_blank" href=""></a>
-        </p>
+        <ServerDetails></ServerDetails>
         <Button
           title={"Launch Dashboard"}
           action={this.launchDashboard}

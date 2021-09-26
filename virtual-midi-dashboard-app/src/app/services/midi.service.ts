@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, isDevMode, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ICCCell, IMIDICell } from '../../../../common';
 
 export const MIDI_CHANNEL = 1;
@@ -40,7 +40,6 @@ export class MidiService {
         cell,
       })
     );
-    // return this.http.post(this.getBaseURL() + '/send-midi', cell);
   }
 
   sendMidiNoteOff(cell: IMIDICell) {
@@ -50,7 +49,6 @@ export class MidiService {
         cell,
       })
     );
-    // return this.http.post(this.getBaseURL() + '/send-midi-off', cell);
   }
 
   sendCC(cell: ICCCell) {
@@ -60,13 +58,5 @@ export class MidiService {
         cell,
       })
     );
-    // return this.http.post(this.getBaseURL() + '/send-cc', {
-    //   controller: cell.controller,
-    //   value: cell.value,
-    // });
-  }
-
-  getBaseURL(): string {
-    return isDevMode() ? 'http://localhost:8080' : '';
   }
 }
