@@ -8,12 +8,8 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import {
-  CELL_LOCAL_STORAGE_KEY,
-  DataService,
-  DATA_VERSION,
-  ICell,
-} from './services/data.service';
+import { DATA_VERSION, ICell } from '../../../common';
+import { CELL_LOCAL_STORAGE_KEY, DataService } from './services/data.service';
 
 export const NUM_ROWS = 3;
 // Cell edge length = (window - navbar height and padding) / desired no. of rows

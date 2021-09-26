@@ -6,9 +6,11 @@
   "scripts": {
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
     "build": "tsc",
+    "build-angular-app": "cd virtual-midi-dashboard-app && npm run build && cd ..",
     "rebuild": "./node_modules/.bin/electron-rebuild",
     "prestart": "npm run build",
     "start": "electron-forge start",
+    "start-dashboard": "npm run build-angular-app && npm run start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "package": "electron-forge package",
     "make": "electron-forge make",
@@ -39,6 +41,7 @@
     "@types/node": "^15.12.4",
     "@types/react": "^17.0.21",
     "@types/react-dom": "^17.0.9",
+    "@types/ws": "^7.4.7",
     "codelyzer": "^6.0.2",
     "electron": "^13.4.0",
     "electron-rebuild": "^2.3.5",
@@ -54,7 +57,8 @@
     "electron-squirrel-startup": "^1.0.0",
     "express": "^4.17.1",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "ws": "^8.2.2"
   },
   "config": {
     "forge": {

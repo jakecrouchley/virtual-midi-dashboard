@@ -3,6 +3,8 @@ import cors from "cors";
 import { Server } from "http";
 import path from "path";
 import { ControlChange, Note, Output } from "easymidi";
+import WebSocket, { Server as WebSocketServer } from "ws";
+import { ICell } from "../common/index";
 
 export class MidiApp {
   app = express();
@@ -11,6 +13,8 @@ export class MidiApp {
   midiChannel: 0 = 0;
 
   virtualOutput?: Output;
+
+  websocket?: WebSocket;
 
   constructor() {
     this.setupMidi();
@@ -22,6 +26,17 @@ export class MidiApp {
   }
 
   setupServer(): Server {
+    const wss = new WebSocketServer({
+      port: 8082,
+    });
+    wss.on("connection", (ws) => {
+      this.websocket = ws;
+      ws.on("message", (data) => {
+        const jsonData = JSON.parse(data.toString());
+        console.log("Received: ", jsonData);
+        const cell = jsonData as ICell;
+      });
+    });
     this.app.use(cors());
 
     this.app.use(
@@ -37,8 +52,29 @@ export class MidiApp {
     this.app.use(express.json());
 
     this.app.post("/send-midi", (req, res) => {
-      const params = req.body;
-      const { note, velocity, label } = params;
+      this.handleMIDI(req.body, "on");
+      return res.status(200).send();
+    });
+
+    this.app.post("/send-midi-off", (req, res) => {
+      this.handleMIDI(req.body, "off");
+      return res.status(200).send();
+    });
+
+    this.app.post("/send-cc", (req, res) => {
+      this.handleCC(req.body);
+      return res.status(200).send();
+    });
+
+    return this.app.listen(this.port, "0.0.0.0", () => {
+      // tslint:disable-next-line:no-console
+      console.log(`server started at http://localhost:${this.port}`);
+    });
+  }
+
+  handleMIDI(data: any, type: "on" | "off") {
+    const { note, velocity, label } = data;
+    if (type === "on") {
       console.log(`${label} on`);
 
       const noteData: Note = {
@@ -47,12 +83,7 @@ export class MidiApp {
         channel: this.midiChannel,
       };
       this.virtualOutput?.send("noteon", noteData);
-      return res.status(200).send();
-    });
-
-    this.app.post("/send-midi-off", (req, res) => {
-      const params = req.body;
-      const { note, velocity, label } = params;
+    } else {
       console.log(`${label} off`);
 
       const noteData: Note = {
@@ -61,25 +92,16 @@ export class MidiApp {
         channel: this.midiChannel,
       };
       this.virtualOutput?.send("noteoff", noteData);
-      return res.status(200).send();
-    });
+    }
+  }
 
-    this.app.post("/send-cc", (req, res) => {
-      const params = req.body;
-      const { controller, value } = params;
-
-      const ccData: ControlChange = {
-        controller,
-        value,
-        channel: this.midiChannel,
-      };
-      this.virtualOutput?.send("cc", ccData);
-      return res.status(200).send();
-    });
-
-    return this.app.listen(this.port, "0.0.0.0", () => {
-      // tslint:disable-next-line:no-console
-      console.log(`server started at http://localhost:${this.port}`);
-    });
+  handleCC(data: any) {
+    const { controller, value } = data;
+    const ccData: ControlChange = {
+      controller,
+      value,
+      channel: this.midiChannel,
+    };
+    this.virtualOutput?.send("cc", ccData);
   }
 }

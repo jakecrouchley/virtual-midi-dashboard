@@ -1,32 +1,11 @@
 import { Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { CELL_TYPES } from '../components/insert-cell-dialog/insert-cell-dialog.component';
+import { ICell, DATA_VERSION } from '../../../../common';
 
 import * as semver from 'semver';
 
 export const CELL_LOCAL_STORAGE_KEY = 'CELLS';
 export const RECENTLY_USED_ICONS_KEY = 'RECENTLTY_USED_ICONS';
-
-export const DATA_VERSION = '1.0.0';
-
-export interface ICell {
-  version: string;
-  cellType: typeof CELL_TYPES[number];
-  label: string;
-  type: 'midi' | 'cc';
-  iconName: string;
-  index: number;
-}
-
-export interface IMIDICell extends ICell {
-  note: number;
-  velocity: number;
-}
-
-export interface ICCCell extends ICell {
-  controller: number;
-  value: number;
-}
 
 @Injectable({
   providedIn: 'root',

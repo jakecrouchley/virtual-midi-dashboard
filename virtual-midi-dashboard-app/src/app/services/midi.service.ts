@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, isDevMode, OnDestroy } from '@angular/core';
-import { ICCCell, IMIDICell } from './data.service';
+import { ICCCell, IMIDICell } from '../../../../common';
 
 export const MIDI_CHANNEL = 1;
 
@@ -27,21 +27,28 @@ export type MidiEvent =
   providedIn: 'root',
 })
 export class MidiService {
-  constructor(private http: HttpClient) {}
+  webSocket?: WebSocket;
+
+  constructor(private http: HttpClient) {
+    this.webSocket = new WebSocket('ws://localhost:8082');
+  }
 
   sendMidiNoteOn(cell: IMIDICell) {
-    return this.http.post(this.getBaseURL() + '/send-midi', cell);
+    this.webSocket?.send(JSON.stringify(cell));
+    // return this.http.post(this.getBaseURL() + '/send-midi', cell);
   }
 
   sendMidiNoteOff(cell: IMIDICell) {
-    return this.http.post(this.getBaseURL() + '/send-midi-off', cell);
+    this.webSocket?.send(JSON.stringify(cell));
+    // return this.http.post(this.getBaseURL() + '/send-midi-off', cell);
   }
 
   sendCC(cell: ICCCell) {
-    return this.http.post(this.getBaseURL() + '/send-cc', {
-      controller: cell.controller,
-      value: cell.value,
-    });
+    this.webSocket?.send(JSON.stringify(cell));
+    // return this.http.post(this.getBaseURL() + '/send-cc', {
+    //   controller: cell.controller,
+    //   value: cell.value,
+    // });
   }
 
   getBaseURL(): string {
