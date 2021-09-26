@@ -34,17 +34,32 @@ export class MidiService {
   }
 
   sendMidiNoteOn(cell: IMIDICell) {
-    this.webSocket?.send(JSON.stringify(cell));
+    this.webSocket?.send(
+      JSON.stringify({
+        action: 'on',
+        cell,
+      })
+    );
     // return this.http.post(this.getBaseURL() + '/send-midi', cell);
   }
 
   sendMidiNoteOff(cell: IMIDICell) {
-    this.webSocket?.send(JSON.stringify(cell));
+    this.webSocket?.send(
+      JSON.stringify({
+        action: 'off',
+        cell,
+      })
+    );
     // return this.http.post(this.getBaseURL() + '/send-midi-off', cell);
   }
 
   sendCC(cell: ICCCell) {
-    this.webSocket?.send(JSON.stringify(cell));
+    this.webSocket?.send(
+      JSON.stringify({
+        action: 'on',
+        cell,
+      })
+    );
     // return this.http.post(this.getBaseURL() + '/send-cc', {
     //   controller: cell.controller,
     //   value: cell.value,

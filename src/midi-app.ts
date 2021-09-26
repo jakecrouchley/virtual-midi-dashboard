@@ -4,17 +4,21 @@ import { Server } from "http";
 import path from "path";
 import { ControlChange, Note, Output } from "easymidi";
 import WebSocket, { Server as WebSocketServer } from "ws";
-import { ICell } from "../common/index";
+import { ICCCell, ICell, IMIDICell, MIDIEvent } from "../common";
+import { ReplaySubject, Subject } from "rxjs";
 
-export class MidiApp {
+class MidiApp {
   app = express();
   port = 8080;
+  socketPort = 8082;
 
   midiChannel: 0 = 0;
 
   virtualOutput?: Output;
 
   websocket?: WebSocket;
+
+  latestEvent$ = new ReplaySubject<MIDIEvent>(10);
 
   constructor() {
     this.setupMidi();
@@ -32,9 +36,16 @@ export class MidiApp {
     wss.on("connection", (ws) => {
       this.websocket = ws;
       ws.on("message", (data) => {
-        const jsonData = JSON.parse(data.toString());
-        console.log("Received: ", jsonData);
-        const cell = jsonData as ICell;
+        const event = JSON.parse(data.toString()) as MIDIEvent;
+        const cell = event.cell as ICell;
+        if (cell.type === "midi") {
+          const midiCell = cell as IMIDICell;
+          this.handleMIDI(midiCell, event.action);
+        } else {
+          const ccCell = cell as ICCCell;
+          this.handleCC(ccCell);
+        }
+        this.latestEvent$.next(event);
       });
     });
     this.app.use(cors());
@@ -72,25 +83,16 @@ export class MidiApp {
     });
   }
 
-  handleMIDI(data: any, type: "on" | "off") {
-    const { note, velocity, label } = data;
+  handleMIDI(data: IMIDICell, type: "on" | "off") {
+    const { note, velocity } = data;
+    const noteData: Note = {
+      note,
+      velocity,
+      channel: this.midiChannel,
+    };
     if (type === "on") {
-      console.log(`${label} on`);
-
-      const noteData: Note = {
-        note,
-        velocity,
-        channel: this.midiChannel,
-      };
       this.virtualOutput?.send("noteon", noteData);
     } else {
-      console.log(`${label} off`);
-
-      const noteData: Note = {
-        note,
-        velocity,
-        channel: this.midiChannel,
-      };
       this.virtualOutput?.send("noteoff", noteData);
     }
   }
@@ -105,3 +107,4 @@ export class MidiApp {
     this.virtualOutput?.send("cc", ccData);
   }
 }
+export default MidiApp;

@@ -1,36 +1,62 @@
+import { MIDIEvent } from "../common";
 import React, { Component } from "react";
+import { midiApp } from "./app";
 
-type Event = {
-  description: string;
+type EventListState = {
+  events: MIDIEvent[];
 };
 
-type EventListProps = {
-  events: Event[];
-};
-
-export default class EventList extends Component<
-  EventListProps,
-  EventListProps
-> {
-  constructor(props: EventListProps) {
+export default class EventList extends Component<any, EventListState> {
+  constructor(props: any) {
     super(props);
 
     this.state = {
-      events: props.events,
+      events: [],
     };
   }
 
-  renderEventsList() {
-    return (
-      <div>
-        {this.state.events.map((event) => {
-          return <p>{event.description}</p>;
-        })}
-      </div>
-    );
+  componentDidMount() {
+    midiApp.latestEvent$.subscribe((event) => {
+      this.setState({
+        events: [...this.state.events, event],
+      });
+    });
   }
 
   render() {
-    return <div>{this.renderEventsList()}</div>;
+    return (
+      <table
+        style={{
+          flex: 1,
+          flexDirection: "column",
+          alignItems: "center",
+          width: "100%",
+          overflowX: "auto",
+        }}
+      >
+        <thead>
+          <tr>
+            <th>Index</th>
+            <th>Type</th>
+            <th>Action</th>
+            <th>Label</th>
+            <th>Control Type</th>
+            <th>Icon Name</th>
+          </tr>
+        </thead>
+        {this.state.events.map((event, index) => {
+          return (
+            <tr key={index} style={{ textAlign: "center" }}>
+              <td>{event.cell.index}</td>
+              <td>{event.cell.type}</td>
+              <td>{event.action}</td>
+              <td>{event.cell.label}</td>
+              <td>{event.cell.cellType}</td>
+              <td>{event.cell.iconName}</td>
+            </tr>
+          );
+        })}
+      </table>
+    );
   }
 }

@@ -1,9 +1,8 @@
 import path from "path";
-import { MidiApp } from "./midi-app";
 
 const { app, BrowserWindow, webContents } = require("electron");
 
-const midiApp = new MidiApp();
+app.allowRendererProcessReuse = false;
 
 const createWindow = () => {
   const win = new BrowserWindow({

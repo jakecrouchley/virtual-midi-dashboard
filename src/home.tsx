@@ -2,8 +2,16 @@ import React, { Component } from "react";
 import Button from "./Button";
 import EventList from "./eventList";
 
-export default class Home extends Component {
-  openDashboard() {
+export default class Home extends Component<any, any> {
+  constructor(props: any) {
+    super(props);
+
+    this.state = {};
+  }
+
+  componentDidMount() {}
+
+  launchDashboard() {
     open("http://localhost:8080/", "_blank", "width=700");
   }
 
@@ -17,8 +25,14 @@ export default class Home extends Component {
           alignItems: "center",
         }}
       >
-        <Button title={"Open Dashboard"} action={this.openDashboard}></Button>
-        <EventList events={[{ description: "hello world" }]}></EventList>
+        <p>
+          Server running on <a target="_blank" href=""></a>
+        </p>
+        <Button
+          title={"Launch Dashboard"}
+          action={this.launchDashboard}
+        ></Button>
+        <EventList></EventList>
       </div>
     );
   }
