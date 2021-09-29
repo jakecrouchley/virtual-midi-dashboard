@@ -22,6 +22,24 @@
       <span class="type">{{ cell.type }}</span>
       <span class="info">{{ getCellInfoText() }}</span>
     </div>
+    <div
+      *ngIf="cell.cellType === 'knob'"
+      class="cell-inner"
+      (drag)="onCellMouseDrag($event)"
+      (dragover)="onCellMouseDrag($event)"
+    >
+      <span class="knob-container">
+        <img class="knob" src="assets/imgs/knob.png" />
+        <img
+          #knobIndicator
+          class="knob-indicator"
+          src="assets/imgs/knob_indicator.png"
+        />
+      </span>
+      <span class="label">{{ cell.label }}</span>
+      <span class="type">{{ cell.type }}</span>
+      <span class="info">{{ getCellInfoText() }}</span>
+    </div>
   </ng-container>
   <ng-template #noCell>
     <div

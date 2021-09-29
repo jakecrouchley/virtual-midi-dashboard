@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { of } from 'rxjs';
+import { BehaviorSubject, of, ReplaySubject } from 'rxjs';
 import { cellSideLength } from 'src/app/app.component';
 import { DataService } from 'src/app/services/data.service';
 import { ICell, IMIDICell, ICCCell, DATA_VERSION } from '../../../../../common';
@@ -16,7 +16,16 @@ export class CellComponent implements OnInit {
   @Input() cell!: ICell;
   @Input() index!: number;
 
+  @ViewChild('knobIndicator') knobIndicator?: ElementRef;
+
+  currentRotation$ = new BehaviorSubject(0);
+
   cellSideLength = cellSideLength;
+
+  // Drag Event Vars
+  acceptInput = true;
+  previousX?: number;
+  previousY?: number;
 
   constructor(
     private midiService: MidiService,
@@ -24,7 +33,16 @@ export class CellComponent implements OnInit {
     private dialog: MatDialog
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.currentRotation$.subscribe((rotation) => {
+      console.log(rotation);
+      console.log(this.knobIndicator);
+
+      if (this.knobIndicator) {
+        this.knobIndicator.nativeElement.style.transform = `rotate3d(0, 0, 1, ${rotation}deg)`;
+      }
+    });
+  }
 
   onCellMousedown(event: MouseEvent) {
     event.preventDefault();
@@ -61,6 +79,39 @@ export class CellComponent implements OnInit {
     }
   }
 
+  onCellMouseDrag(event: DragEvent) {
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+    if (this.acceptInput) {
+      this.acceptInput = false;
+      this.calculateRotationFromEvent(event);
+      setTimeout(() => {
+        this.acceptInput = true;
+      }, 1);
+    }
+
+    // console.log('x: ', event.x);
+    // console.log('y: ', event.y);
+    // console.log('clientX: ', event.clientX);
+    // console.log('clientY: ', event.clientY);
+    // console.log('pageX: ', event.pageX);
+    // console.log('pageY: ', event.pageY);
+  }
+
+  calculateRotationFromEvent(event: DragEvent) {
+    if (this.previousY) {
+      // const diffY =
+      if (this.previousY > event.clientY) {
+        this.currentRotation$.next(this.currentRotation$.value + 1);
+      } else if (this.previousY < event.clientY) {
+        this.currentRotation$.next(this.currentRotation$.value - 1);
+      }
+    }
+    this.previousY = event.clientY;
+  }
+
   onCellContextMenu(event: Event) {
     event.preventDefault();
   }
@@ -83,7 +134,7 @@ export class CellComponent implements OnInit {
       },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((result: ICell) => {
       console.log(`Dialog result: `, result);
       if (result) {
         const cell = result as ICell;

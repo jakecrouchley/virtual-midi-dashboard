@@ -1,0 +1,36 @@
+<svg width="500" height="500" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0)">
+<circle cx="250" cy="250" r="250" fill="#C4C4C4"/>
+<circle cx="302.972" cy="50.4386" r="20.8203" transform="rotate(15 302.972 50.4386)" fill="#565656"/>
+<circle cx="196.028" cy="449.561" r="20.8203" transform="rotate(15 196.028 449.561)" fill="#565656"/>
+<circle cx="449.715" cy="303.095" r="20.8203" transform="rotate(15 449.715 303.095)" fill="#565656"/>
+<circle cx="249.5" cy="43.3988" r="20.8203" fill="#565656"/>
+<circle cx="249.5" cy="456.601" r="20.8203" fill="#565656"/>
+<circle cx="456.635" cy="249.466" r="20.8203" fill="#565656"/>
+<circle cx="42.365" cy="249.466" r="20.8203" fill="#565656"/>
+<circle cx="449.062" cy="196.528" r="20.8203" transform="rotate(75 449.062 196.528)" fill="#565656"/>
+<circle cx="49.9386" cy="303.472" r="20.8203" transform="rotate(75 49.9386 303.472)" fill="#565656"/>
+<circle cx="303.626" cy="449.939" r="20.8203" transform="rotate(75 303.626 449.939)" fill="#565656"/>
+<circle cx="196.405" cy="49.7848" r="20.8203" transform="rotate(75 196.405 49.7848)" fill="#565656"/>
+<circle cx="428.422" cy="146.699" r="20.8203" transform="rotate(60 428.422 146.699)" fill="#565656"/>
+<circle cx="70.578" cy="353.301" r="20.8203" transform="rotate(60 70.578 353.301)" fill="#565656"/>
+<circle cx="353.53" cy="429.117" r="20.8203" transform="rotate(60 353.53 429.117)" fill="#565656"/>
+<circle cx="146.395" cy="70.3489" r="20.8203" transform="rotate(60 146.395 70.3489)" fill="#565656"/>
+<circle cx="395.589" cy="103.911" r="20.8203" transform="rotate(45 395.589 103.911)" fill="#565656"/>
+<circle cx="103.411" cy="396.089" r="20.8203" transform="rotate(45 103.411 396.089)" fill="#565656"/>
+<circle cx="396.344" cy="396.089" r="20.8203" transform="rotate(45 396.344 396.089)" fill="#565656"/>
+<circle cx="103.411" cy="103.156" r="20.8203" transform="rotate(45 103.411 103.156)" fill="#565656"/>
+<circle cx="352.801" cy="71.0781" r="20.8203" transform="rotate(30 352.801 71.0781)" fill="#565656"/>
+<circle cx="146.199" cy="428.922" r="20.8203" transform="rotate(30 146.199 428.922)" fill="#565656"/>
+<circle cx="429.151" cy="353.105" r="20.8203" transform="rotate(30 429.151 353.105)" fill="#565656"/>
+<circle cx="70.3827" cy="145.97" r="20.8203" transform="rotate(30 70.3827 145.97)" fill="#565656"/>
+<circle cx="49.5611" cy="195.874" r="20.8203" transform="rotate(15 49.5611 195.874)" fill="#565656"/>
+<circle cx="250" cy="250" r="216" fill="#373737"/>
+<circle cx="250" cy="250" r="21" fill="#565656"/>
+</g>
+<defs>
+<clipPath id="clip0">
+<rect width="500" height="500" fill="white"/>
+</clipPath>
+</defs>
+</svg>
