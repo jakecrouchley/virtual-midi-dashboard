@@ -8,6 +8,10 @@ $menu-bar-padding: 2px;
   height: $menu-bar-size;
   padding-bottom: $menu-bar-padding;
 
+  button {
+    background-color: #e3e3e3;
+  }
+
   .version {
     margin: 0 16px;
   }

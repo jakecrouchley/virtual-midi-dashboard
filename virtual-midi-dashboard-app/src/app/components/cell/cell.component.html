@@ -18,6 +18,9 @@
         aria-label="Cell Action"
         >{{ cell.iconName }}</mat-icon
       >
+      <div class="button-container">
+        <img src="assets/imgs/button.svg" />
+      </div>
       <span class="label">{{ cell.label }}</span>
       <span class="type">{{ cell.type }}</span>
       <span class="info">{{ getCellInfoText() }}</span>
@@ -29,12 +32,28 @@
       (dragover)="onCellMouseDrag($event)"
     >
       <span class="knob-container">
+        <span class="cursor-capture-area-top"></span>
+        <span class="cursor-capture-area-bottom"></span>
         <img class="knob" src="assets/imgs/knob.png" />
         <img
           #knobIndicator
           class="knob-indicator"
           src="assets/imgs/knob_indicator.png"
         />
+      </span>
+      <span class="label">{{ cell.label }}</span>
+      <span class="type">{{ cell.type }}</span>
+      <span class="info">{{ getCellInfoText() }}</span>
+    </div>
+    <div
+      *ngIf="cell.cellType === 'slider'"
+      class="cell-inner"
+      (drag)="onCellMouseDrag($event)"
+      (dragover)="onCellMouseDrag($event)"
+    >
+      <span class="slider-container">
+        <img class="slider-track" src="assets/imgs/slider-track.png" />
+        <img class="slider-handle" src="assets/imgs/slider-handle.png" />
       </span>
       <span class="label">{{ cell.label }}</span>
       <span class="type">{{ cell.type }}</span>
