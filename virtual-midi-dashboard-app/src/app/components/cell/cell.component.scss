@@ -111,3 +111,19 @@ $icon-size: 72px;
     height: 100%;
   }
 }
+
+.drag-indicator {
+  position: absolute;
+
+  display: none;
+  box-sizing: border-box;
+
+  width: 20px;
+  height: 20px;
+
+  background-color: rgba(196,196,196, 0.25);
+
+  border: 4px solid #979797;
+  border-radius: 50%;
+  // transform: translate3d(-50%, -50%, 0);
+}
