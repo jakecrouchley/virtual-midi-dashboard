@@ -39,15 +39,18 @@ export class CellComponent implements OnInit, AfterViewInit {
   currentRotation$ = new BehaviorSubject(0);
 
   // Event Observables
-  $onDragStart?: Observable<DragEvent>;
-  $onDrag?: Observable<DragEvent>;
-  $onDragEnd?: Observable<DragEvent>;
+  $onDragStart?: Observable<MouseEvent>;
+  $onDrag?: Observable<MouseEvent>;
+  $onDragEnd?: Observable<MouseEvent>;
 
   cellSideLength = cellSideLength;
 
   // Drag Event Vars
   startX = 0;
   startY = 0;
+  previousY = 0;
+  isMouseDown = false;
+  dragHoldInterval: any;
 
   constructor(
     private midiService: MidiService,
@@ -66,18 +69,18 @@ export class CellComponent implements OnInit, AfterViewInit {
     });
 
     if (this.knob) {
-      this.$onDragStart = fromEvent<DragEvent>(
+      this.$onDragStart = fromEvent<MouseEvent>(
         this.knob?.nativeElement,
-        'dragstart'
+        'mousedown'
       );
       this.$onDragStart.subscribe((event) => {
-        console.log('drag started');
-        const img = new Image();
-        img.src =
-          'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=';
-        if (event.dataTransfer) {
-          event.dataTransfer.setDragImage(img, 0, 0);
-        }
+        console.log('START DRAGING: ', event);
+        // const img = new Image();
+        // img.src =
+        //   'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=';
+        // if (event.dataTransfer) {
+        //   event.dataTransfer.setDragImage(img, 0, 0);
+        // }
         this.startX = event.clientX;
         this.startY = event.clientY;
         if (this.dragIndicator) {
@@ -89,19 +92,20 @@ export class CellComponent implements OnInit, AfterViewInit {
             event.clientX - 10
           }px`;
         }
+        this.isMouseDown = true;
       });
 
-      this.$onDrag = fromEvent<DragEvent>(this.knob?.nativeElement, 'drag');
+      this.$onDrag = fromEvent<MouseEvent>(document.body, 'mousemove');
       this.$onDrag.subscribe((event) => {
-        console.log(event);
-        this.calculateRotationFromEvent(event);
+        if (this.isMouseDown) {
+          this.calculateRotationFromEvent(event);
+        }
       });
 
-      this.$onDragEnd = fromEvent<DragEvent>(
-        this.knob?.nativeElement,
-        'dragend'
-      );
+      this.$onDragEnd = fromEvent<MouseEvent>(document.body, 'mouseup');
       this.$onDragEnd.subscribe((event) => {
+        clearInterval(this.dragHoldInterval);
+        this.isMouseDown = false;
         this.startX = 0;
         this.startY = 0;
         if (this.dragIndicator) {
@@ -162,9 +166,13 @@ export class CellComponent implements OnInit, AfterViewInit {
   //   this.$onDrag.next(event);
   // }
 
-  calculateRotationFromEvent(event: DragEvent) {
-    const stepValue = event.clientY - this.startY;
-    this.currentRotation$.next(this.currentRotation$.value + stepValue / 50);
+  calculateRotationFromEvent(event: MouseEvent) {
+    console.log('ROTATION EVENT: ', event);
+    const value = event.clientY - this.startY;
+    this.currentRotation$.next(value);
+
+    // const stepValue = event.clientY - this.startY;
+    // this.currentRotation$.next(this.currentRotation$.value + stepValue / 50);
     // if (this.previousY) {
     //   // const diffY =
     //   if (this.previousY > event.clientY) {
