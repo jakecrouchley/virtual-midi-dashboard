@@ -26,19 +26,11 @@
       <span class="info">{{ getCellInfoText() }}</span>
     </div>
     <div *ngIf="cell.cellType === 'knob'" class="cell-inner">
-      <span class="knob-container" #knob>
-        <span class="cursor-capture-area-top"></span>
-        <span class="cursor-capture-area-bottom"></span>
-        <img class="knob" src="assets/imgs/knob.png" />
-        <img
-          #knobIndicator
-          class="knob-indicator"
-          src="assets/imgs/knob_indicator.png"
-        />
-      </span>
-      <span class="label">{{ cell.label }}</span>
-      <span class="type">{{ cell.type }}</span>
-      <span class="info">{{ getCellInfoText() }}</span>
+      <app-knob
+        [label]="cell.label"
+        [type]="cell.type"
+        [info]="getCellInfoText()"
+      ></app-knob>
     </div>
     <div *ngIf="cell.cellType === 'slider'" class="cell-inner">
       <span class="slider-container">
@@ -62,4 +54,3 @@
     </div>
   </ng-template>
 </div>
-<span class="drag-indicator" #dragIndicator></span>
