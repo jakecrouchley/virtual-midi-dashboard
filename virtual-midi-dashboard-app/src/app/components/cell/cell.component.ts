@@ -2,27 +2,17 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component,
-  ElementRef,
   Input,
+  OnChanges,
   OnInit,
-  ViewChild,
+  SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import {
-  BehaviorSubject,
-  fromEvent,
-  Observable,
-  of,
-  ReplaySubject,
-  Subject,
-} from 'rxjs';
-import { cellSideLength } from 'src/app/app.component';
 import { DataService } from 'src/app/services/data.service';
 import { ICell, IMIDICell, ICCCell, DATA_VERSION } from '../../../../../common';
 import { MidiService } from 'src/app/services/midi.service';
 import { InsertCellDialogComponent } from '../insert-cell-dialog/insert-cell-dialog.component';
-import { debounce, debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-cell',
@@ -30,11 +20,10 @@ import { debounce, debounceTime } from 'rxjs/operators';
   styleUrls: ['./cell.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class CellComponent implements OnInit, AfterViewInit {
+export class CellComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() cell!: ICell;
   @Input() index!: number;
-
-  cellSideLength = cellSideLength;
+  @Input() cellEdgeLength!: number;
 
   constructor(
     private midiService: MidiService,
@@ -46,6 +35,10 @@ export class CellComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log(changes);
+  }
 
   onCellMousedown(event: MouseEvent) {
     event.preventDefault();

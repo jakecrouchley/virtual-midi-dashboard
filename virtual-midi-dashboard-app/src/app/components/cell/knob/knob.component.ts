@@ -72,6 +72,9 @@ export class KnobComponent implements OnInit, AfterViewInit {
 
       this.$onDrag = fromEvent<MouseEvent>(document.body, 'mousemove');
       this.$onDrag.subscribe((event) => {
+        // if (event.buttons === 1) {
+        //   this.isMouseDown = false;
+        // }
         if (this.isMouseDown) {
           this.calculateRotationFromEvent(event);
         }

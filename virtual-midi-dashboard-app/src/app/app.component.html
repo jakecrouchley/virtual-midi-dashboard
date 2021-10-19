@@ -14,16 +14,17 @@
     (change)="handleFileInput($event)"
   />
 </div>
-<div class="cell-container" [style.width.px]="cellSideLength">
+<div class="cell-container" [style.width.px]="cellEdgeLength" #cellContainer>
   <app-cell
     *ngFor="let cell of cells; let i = index"
     [cell]="cell"
     [index]="i"
+    [cellEdgeLength]="cellEdgeLength"
   ></app-cell>
   <!-- <div
     class="cell"
-    [style.width.px]="cellSideLength"
-    [style.height.px]="cellSideLength"
+    [style.width.px]="cellEdgeLength"
+    [style.height.px]="cellEdgeLength"
     (click)="openDialog()"
     *ngIf="cells.length === 0"
   >
@@ -33,8 +34,8 @@
   </div> -->
   <!-- <div
     class="cell"
-    [style.width.px]="cellSideLength"
-    [style.height.px]="cellSideLength"
+    [style.width.px]="cellEdgeLength"
+    [style.height.px]="cellEdgeLength"
     (click)="installPWA()"
   >
     <span>Install PWA</span>
