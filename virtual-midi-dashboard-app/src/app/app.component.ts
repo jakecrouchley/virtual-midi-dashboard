@@ -17,7 +17,7 @@ import { CELL_LOCAL_STORAGE_KEY, DataService } from './services/data.service';
 export let NUM_ROWS = 3;
 // Cell edge length = (window - navbar height and padding) / desired no. of rows
 // export const cellEdgeLength = (window.innerHeight - 34) / NUM_ROWS;
-export let cellEdgeLength = 150;
+export let cellEdgeLength = 200;
 export const minCellEdgeLength = 150;
 export const maxCellEdgeLength = 250;
 @Component({
@@ -75,10 +75,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       event.preventDefault();
     };
 
-    this.NUM_COLS = Math.floor(
-      window.innerWidth /
-        (minCellEdgeLength + (maxCellEdgeLength - minCellEdgeLength) / 2)
-    );
+    this.NUM_COLS = Math.floor(window.innerWidth / cellEdgeLength);
 
     fromEvent(window, 'resize').subscribe((event) => {
       // console.log(event);
@@ -152,9 +149,9 @@ export class AppComponent implements OnInit, AfterViewInit {
   handleFileInput(event: any) {
     const file = event.target.files[0] as File;
     const reader = new FileReader();
-    reader.addEventListener('load', (event) => {
-      if (event.target && event.target?.result) {
-        this.validateAndLoadFileContent(event.target.result as string);
+    reader.addEventListener('load', (loadEvent) => {
+      if (loadEvent.target && loadEvent.target?.result) {
+        this.validateAndLoadFileContent(loadEvent.target.result as string);
         this.fileInput.nativeElement.value = '';
       } else {
         console.error('No file');
@@ -172,7 +169,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       const fileJSON = JSON.parse(fileText);
       // Assume valid and then mark invalid if any item doesn't have a note or controller set
       let validated = true;
-      (fileJSON as Object[]).forEach((cell) => {
+      (fileJSON as object[]).forEach((cell) => {
         if (
           !cell.hasOwnProperty('note') &&
           !cell.hasOwnProperty('controller')
