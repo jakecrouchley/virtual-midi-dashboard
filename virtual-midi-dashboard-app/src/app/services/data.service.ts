@@ -34,6 +34,18 @@ export class DataService {
     this.cells$.next(validCells);
   }
 
+  /**
+   * Replace the cell currently at the index cellToUpdate.index with the passed cell's data
+   * @param cellToUpdate Cell to update the cells array with
+   */
+  replaceCell(cellToUpdate: ICell) {
+    const cells = this.cells$.value;
+    const indexToUpdate = cells.findIndex(
+      (cell) => cell.index === cellToUpdate.index
+    );
+    cells[indexToUpdate] = cellToUpdate;
+  }
+
   addCell(cell: ICell) {
     this.cells$.next([...this.cells$.value, cell]);
   }

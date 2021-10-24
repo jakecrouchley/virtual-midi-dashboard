@@ -2,12 +2,14 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   Input,
   OnInit,
+  Output,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import { BehaviorSubject, fromEvent, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, fromEvent, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-knob',
@@ -23,6 +25,8 @@ export class KnobComponent implements OnInit, AfterViewInit {
   @ViewChild('knobIndicator') knobIndicator?: ElementRef;
   // @ViewChild('dragIndicator') dragIndicator?: ElementRef<HTMLSpanElement>;
 
+  @Output() midiSend: EventEmitter<number> = new EventEmitter();
+
   // Drag Event Vars
   startX = 0;
   startY = 0;
@@ -36,6 +40,7 @@ export class KnobComponent implements OnInit, AfterViewInit {
   $onDragStart?: Observable<MouseEvent>;
   $onDrag?: Observable<MouseEvent>;
   $onDragEnd?: Observable<MouseEvent>;
+  $onDragExit?: Observable<MouseEvent>;
 
   constructor() {}
 
@@ -46,6 +51,10 @@ export class KnobComponent implements OnInit, AfterViewInit {
       if (this.knobIndicator) {
         this.knobIndicator.nativeElement.style.transform = `rotate3d(0, 0, 1, ${rotation}deg)`;
       }
+      console.log(rotation);
+
+      const midiValue = Math.ceil((rotation / 360) * 127);
+      this.midiSend.emit(midiValue);
     });
 
     if (this.knob) {
@@ -77,20 +86,28 @@ export class KnobComponent implements OnInit, AfterViewInit {
         // }
         if (this.isMouseDown) {
           this.calculateRotationFromEvent(event);
+        } else {
+          const mouseup = new Event('mouseup');
+          event.target?.dispatchEvent(mouseup);
         }
       });
 
-      this.$onDragEnd = fromEvent<MouseEvent>(document.body, 'mouseup');
-      this.$onDragEnd.subscribe((event) => {
+      const onDragEnd = () => {
         clearInterval(this.dragHoldInterval);
         this.isMouseDown = false;
         this.startX = 0;
         this.startY = 0;
+        if (this.currentRotation$.value >= 360) {
+          this.currentRotation$.next(360 - this.currentRotation$.value);
+        }
         this.previousValue = this.currentRotation$.value;
-        // if (this.dragIndicator) {
-        //   this.dragIndicator.nativeElement.style.display = 'none';
-        // }
-      });
+      };
+
+      this.$onDragEnd = fromEvent<MouseEvent>(document.body, 'mouseup');
+      this.$onDragEnd.subscribe((_) => onDragEnd());
+
+      this.$onDragExit = fromEvent<MouseEvent>(document.body, 'mouseleave');
+      this.$onDragExit.subscribe((_) => onDragEnd());
 
       fromEvent<MouseEvent>(this.knob?.nativeElement, 'dblclick').subscribe(
         (_) => {
@@ -102,9 +119,12 @@ export class KnobComponent implements OnInit, AfterViewInit {
   }
 
   calculateRotationFromEvent(event: MouseEvent) {
-    console.log('ROTATION EVENT: ', event);
-    const value = event.clientY - this.startY + this.previousValue;
-    this.currentRotation$.next(value);
+    const value = this.startY - event.clientY + this.previousValue;
+    if (value >= 360) {
+      this.currentRotation$.next(value - 360);
+    } else {
+      this.currentRotation$.next(value);
+    }
 
     // const stepValue = event.clientY - this.startY;
     // this.currentRotation$.next(this.currentRotation$.value + stepValue / 50);

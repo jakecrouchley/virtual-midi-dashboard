@@ -97,13 +97,15 @@ class MidiApp {
     }
   }
 
-  handleCC(data: any) {
+  handleCC(data: ICCCell) {
     const { controller, value } = data;
     const ccData: ControlChange = {
       controller,
       value,
       channel: this.midiChannel,
     };
+    console.log(ccData);
+
     this.virtualOutput?.send("cc", ccData);
   }
 }

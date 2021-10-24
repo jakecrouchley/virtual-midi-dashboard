@@ -30,6 +30,7 @@
         [label]="cell.label"
         [type]="cell.type"
         [info]="getCellInfoText()"
+        (midiSend)="onMidiValueReceived($event)"
       ></app-knob>
     </div>
     <div *ngIf="cell.cellType === 'slider'" class="cell-inner">
@@ -37,6 +38,7 @@
         [label]="cell.label"
         [type]="cell.type"
         [info]="getCellInfoText()"
+        (midiSend)="onMidiValueReceived($event)"
       ></app-slider>
     </div>
   </ng-container>

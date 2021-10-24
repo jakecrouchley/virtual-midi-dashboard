@@ -20,7 +20,7 @@ import { InsertCellDialogComponent } from '../insert-cell-dialog/insert-cell-dia
   styleUrls: ['./cell.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class CellComponent implements OnInit, AfterViewInit, OnChanges {
+export class CellComponent implements OnInit, AfterViewInit {
   @Input() cell!: ICell;
   @Input() index!: number;
   @Input() cellEdgeLength!: number;
@@ -35,10 +35,6 @@ export class CellComponent implements OnInit, AfterViewInit, OnChanges {
   ngOnInit(): void {}
 
   ngAfterViewInit(): void {}
-
-  ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
-  }
 
   onCellMousedown(event: MouseEvent) {
     event.preventDefault();
@@ -72,6 +68,30 @@ export class CellComponent implements OnInit, AfterViewInit, OnChanges {
         default:
           this.midiService.sendMidiNoteOff(this.cell as IMIDICell);
       }
+    }
+  }
+
+  onMidiValueReceived(value: number) {
+    if (this.cell.type === 'midi') {
+      const updatedCell: IMIDICell = {
+        ...(this.cell as IMIDICell),
+        velocity: value,
+      };
+      this.cell = updatedCell;
+      this.changeRef.detectChanges();
+      this.dataService.replaceCell(updatedCell);
+
+      this.midiService.sendMidiNoteOn(this.cell as IMIDICell);
+    } else if (this.cell.type === 'cc') {
+      const updatedCell: ICCCell = {
+        ...(this.cell as ICCCell),
+        value,
+      };
+      this.cell = updatedCell;
+      this.changeRef.detectChanges();
+      this.dataService.replaceCell(updatedCell);
+
+      this.midiService.sendCC(this.cell as ICCCell);
     }
   }
 

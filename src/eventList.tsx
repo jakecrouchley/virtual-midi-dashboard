@@ -44,6 +44,7 @@ export default class EventList extends Component<any, EventListState> {
               <th>Index</th>
               <th>Type</th>
               <th>Action</th>
+              <th>Velocity/Value</th>
               <th>Label</th>
               <th>Control Type</th>
               <th>Icon Name</th>
@@ -55,6 +56,7 @@ export default class EventList extends Component<any, EventListState> {
                 <td>{event.cell.index}</td>
                 <td>{event.cell.type}</td>
                 <td>{event.action}</td>
+                <td>{event.velocity || event.value}</td>
                 <td>{event.cell.label}</td>
                 <td>{event.cell.cellType}</td>
                 <td>{event.cell.iconName}</td>

@@ -24,4 +24,6 @@ export interface ICCCell extends ICell {
 export type MIDIEvent = {
   cell: ICell | IMIDICell | ICCCell;
   action: "on" | "off";
+  velocity?: number;
+  value?: number;
 };
