@@ -1,4 +1,4 @@
-import { MIDIEvent } from "../common";
+import { ICCCell, IMIDICell, MIDIEvent } from "../common";
 import React, { Component } from "react";
 import { midiApp } from "./app";
 
@@ -18,7 +18,7 @@ export default class EventList extends Component<any, EventListState> {
   componentDidMount() {
     midiApp.latestEvent$.subscribe((event) => {
       this.setState({
-        events: [...this.state.events, event],
+        events: [event, ...this.state.events],
       });
     });
   }
@@ -44,6 +44,7 @@ export default class EventList extends Component<any, EventListState> {
               <th>Index</th>
               <th>Type</th>
               <th>Action</th>
+              <th>Note/Controller</th>
               <th>Velocity/Value</th>
               <th>Label</th>
               <th>Control Type</th>
@@ -56,6 +57,10 @@ export default class EventList extends Component<any, EventListState> {
                 <td>{event.cell.index}</td>
                 <td>{event.cell.type}</td>
                 <td>{event.action}</td>
+                <td>
+                  {(event.cell as IMIDICell)?.note ||
+                    (event.cell as ICCCell)?.controller}
+                </td>
                 <td>{event.velocity || event.value}</td>
                 <td>{event.cell.label}</td>
                 <td>{event.cell.cellType}</td>

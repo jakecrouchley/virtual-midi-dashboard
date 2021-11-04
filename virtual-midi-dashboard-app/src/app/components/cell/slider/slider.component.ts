@@ -77,9 +77,6 @@ export class SliderComponent implements OnInit, AfterViewInit {
 
       this.$onDrag = fromEvent<MouseEvent>(document.body, 'mousemove');
       this.$onDrag.subscribe((event) => {
-        // if (event.buttons === 1) {
-        //   this.isMouseDown = false;
-        // }
         if (this.isMouseDown) {
           this.calculateSliderValue(event);
         }
@@ -91,11 +88,17 @@ export class SliderComponent implements OnInit, AfterViewInit {
         this.isMouseDown = false;
         this.previousValue = this.currentValue$.value;
       });
+
+      fromEvent<MouseEvent>(this.slider?.nativeElement, 'dblclick').subscribe(
+        (event) => {
+          this.currentValue$.next(0);
+        }
+      );
     }
   }
 
   calculateSliderValue(event: MouseEvent) {
-    const value = event.clientY - this.startY; // + this.previousValue;
+    const value = event.clientY - this.startY;
 
     const offset = this.convertScreenDimsToValue(this.startY);
 

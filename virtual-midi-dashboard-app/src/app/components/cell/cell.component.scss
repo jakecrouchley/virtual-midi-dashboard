@@ -51,24 +51,10 @@ $icon-size: 72px;
 }
 
 .cell-icon {
-
   font-size: $icon-size;
 
   &.mat-icon {
-
     width: $icon-size;
     height: $icon-size;
-  }
-}
-
-.button-container {
-  position: absolute;
-
-  width: 60%;
-  height: 60%;
-
-  img {
-    width: 100%;
-    height: 100%;
   }
 }

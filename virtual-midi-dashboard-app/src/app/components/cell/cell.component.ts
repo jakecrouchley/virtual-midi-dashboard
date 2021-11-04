@@ -2,10 +2,12 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   Input,
   OnChanges,
   OnInit,
   SimpleChanges,
+  ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,6 +15,7 @@ import { DataService } from 'src/app/services/data.service';
 import { ICell, IMIDICell, ICCCell, DATA_VERSION } from '../../../../../common';
 import { MidiService } from 'src/app/services/midi.service';
 import { InsertCellDialogComponent } from '../insert-cell-dialog/insert-cell-dialog.component';
+import { fromEvent, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-cell',
@@ -25,6 +28,10 @@ export class CellComponent implements OnInit, AfterViewInit {
   @Input() index!: number;
   @Input() cellEdgeLength!: number;
 
+  @ViewChild('cellRef') cellRef?: ElementRef<HTMLDivElement>;
+
+  $onCellMousedown?: Observable<MouseEvent>;
+
   constructor(
     private midiService: MidiService,
     private dataService: DataService,
@@ -34,40 +41,26 @@ export class CellComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {}
 
-  ngAfterViewInit(): void {}
-
-  onCellMousedown(event: MouseEvent) {
-    event.preventDefault();
-    if (this.cell && event.button !== 2) {
-      switch (this.cell.type) {
-        case 'midi':
-          this.midiService.sendMidiNoteOn(this.cell as IMIDICell);
-          break;
-        case 'cc':
-          this.midiService.sendCC(this.cell as ICCCell);
-          break;
-        default:
-          this.midiService.sendMidiNoteOn(this.cell as IMIDICell);
-      }
-    } else if (event.button === 2) {
-      this.openDialog();
-    } else {
-      this.openDialog();
+  ngAfterViewInit(): void {
+    if (this.cellRef) {
+      this.$onCellMousedown = fromEvent<MouseEvent>(
+        this.cellRef.nativeElement,
+        'mousedown'
+      );
+      this.$onCellMousedown.subscribe((event) => {
+        if (event.button === 2) {
+          event.preventDefault();
+          this.openDialog();
+        }
+      });
     }
   }
 
-  onCellMouseup() {
-    if (this.cell) {
-      switch (this.cell.type) {
-        case 'midi':
-          this.midiService.sendMidiNoteOff(this.cell as IMIDICell);
-          break;
-        case 'cc':
-          // TODO: Build this in
-          break;
-        default:
-          this.midiService.sendMidiNoteOff(this.cell as IMIDICell);
-      }
+  onCellMousedown(event: MouseEvent) {
+    if (event.button === 2) {
+      this.openDialog();
+    } else {
+      this.openDialog();
     }
   }
 
