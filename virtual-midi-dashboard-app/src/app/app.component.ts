@@ -1,6 +1,8 @@
 import { Overlay } from '@angular/cdk/overlay';
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   OnInit,
@@ -8,12 +10,16 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { fromEvent } from 'rxjs';
 import { DATA_VERSION, ICell } from '../../../common';
 import { CELL_LOCAL_STORAGE_KEY, DataService } from './services/data.service';
 
-export const NUM_ROWS = 3;
+export let NUM_ROWS = 3;
 // Cell edge length = (window - navbar height and padding) / desired no. of rows
-export const cellSideLength = (window.innerHeight - 34) / NUM_ROWS;
+// export const cellEdgeLength = (window.innerHeight - 34) / NUM_ROWS;
+export let cellEdgeLength = 200;
+export const minCellEdgeLength = 150;
+export const maxCellEdgeLength = 250;
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -22,37 +28,42 @@ export const cellSideLength = (window.innerHeight - 34) / NUM_ROWS;
 export class AppComponent implements OnInit, AfterViewInit {
   @ViewChild('confirmNewDialog') confirmNewDialog!: TemplateRef<any>;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('cellContainer') cellContainer!: ElementRef<HTMLElement>;
 
-  defaultGridCount = 12; // Dynamic option: Math.floor(window.innerWidth / this.cellSideLength) * this.NUM_ROWS;
+  defaultGridCount = 12; // Dynamic option: Math.floor(window.innerWidth / this.cellEdgeLength) * this.NUM_ROWS;
+  startingGridCount = 12;
 
   cells: ICell[] = [];
-  cellSideLength = cellSideLength;
+  cellEdgeLength = cellEdgeLength;
+  NUM_COLS = 4;
+  gridTemplateCols = `repeat(${this.NUM_COLS}, ${cellEdgeLength})`;
 
   dataVersion = DATA_VERSION;
 
   constructor(
     private dataService: DataService,
     private dialog: MatDialog,
-    private overlay: Overlay
+    private overlay: Overlay,
+    private changeRef: ChangeDetectorRef
   ) {
     this.overlay.create();
   }
 
   ngOnInit() {
-    this.dataService.cells$.subscribe((cells) => {
-      let startingGridSize = this.defaultGridCount;
-      cells.forEach((cell) => {
-        startingGridSize = Math.max(
-          isNaN(cell.index + 1) ? 0 : cell.index + 1,
-          startingGridSize
-        );
-      });
-
-      this.cells = new Array(startingGridSize);
-      cells.forEach((cell) => {
-        this.cells[cell.index] = cell;
-      });
-    });
+    // this.dataService.cells$.subscribe((cells) => {
+    //   let startingGridSize = this.defaultGridCount;
+    //   cells.forEach((cell) => {
+    //     startingGridSize = Math.max(
+    //       isNaN(cell.index + 1) ? 0 : cell.index + 1,
+    //       startingGridSize
+    //     );
+    //   });
+    //   this.cells = new Array(startingGridSize);
+    //   cells.forEach((cell) => {
+    //     this.cells[cell.index] = cell;
+    //   });
+    // });
+    this.cells = new Array(this.startingGridCount);
   }
 
   ngAfterViewInit() {
@@ -63,6 +74,41 @@ export class AppComponent implements OnInit, AfterViewInit {
     overlay.oncontextmenu = (event) => {
       event.preventDefault();
     };
+
+    this.NUM_COLS = Math.floor(window.innerWidth / cellEdgeLength);
+
+    fromEvent(window, 'resize').subscribe((event) => {
+      // console.log(event);
+      this.calculateGridDimensions();
+    });
+    this.calculateGridDimensions();
+    this.populateCells();
+  }
+
+  calculateGridDimensions() {
+    console.log('updating dimensions');
+
+    cellEdgeLength = window.innerWidth / this.NUM_COLS;
+    if (cellEdgeLength > maxCellEdgeLength) {
+      this.NUM_COLS += 1;
+    } else if (cellEdgeLength < minCellEdgeLength) {
+      this.NUM_COLS -= 1;
+    }
+    // Update local variable with value of exported variable
+    this.cellEdgeLength = cellEdgeLength;
+
+    this.cellContainer.nativeElement.style.gridTemplateColumns = `repeat(${this.NUM_COLS}, ${cellEdgeLength}px)`;
+    this.cellContainer.nativeElement.style.gridTemplateRows = `repeat(${this.NUM_COLS}, ${cellEdgeLength}px)`;
+
+    this.changeRef.detectChanges();
+  }
+
+  populateCells() {
+    this.dataService.cells$.subscribe((cells) => {
+      cells.forEach((cell) => {
+        this.cells[cell.index] = cell;
+      });
+    });
   }
 
   // Menu Actions
@@ -103,9 +149,9 @@ export class AppComponent implements OnInit, AfterViewInit {
   handleFileInput(event: any) {
     const file = event.target.files[0] as File;
     const reader = new FileReader();
-    reader.addEventListener('load', (event) => {
-      if (event.target && event.target?.result) {
-        this.validateAndLoadFileContent(event.target.result as string);
+    reader.addEventListener('load', (loadEvent) => {
+      if (loadEvent.target && loadEvent.target?.result) {
+        this.validateAndLoadFileContent(loadEvent.target.result as string);
         this.fileInput.nativeElement.value = '';
       } else {
         console.error('No file');
@@ -123,7 +169,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       const fileJSON = JSON.parse(fileText);
       // Assume valid and then mark invalid if any item doesn't have a note or controller set
       let validated = true;
-      (fileJSON as Object[]).forEach((cell) => {
+      (fileJSON as object[]).forEach((cell) => {
         if (
           !cell.hasOwnProperty('note') &&
           !cell.hasOwnProperty('controller')

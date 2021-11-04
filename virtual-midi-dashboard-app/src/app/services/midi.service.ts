@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ICCCell, IMIDICell } from '../../../../common';
+import { ICCCell, IMIDICell, MIDIEvent } from '../../../../common';
 
 export const MIDI_CHANNEL = 1;
 
@@ -38,7 +38,8 @@ export class MidiService {
       JSON.stringify({
         action: 'on',
         cell,
-      })
+        velocity: cell.velocity,
+      } as MIDIEvent)
     );
   }
 
@@ -47,7 +48,7 @@ export class MidiService {
       JSON.stringify({
         action: 'off',
         cell,
-      })
+      } as MIDIEvent)
     );
   }
 
@@ -56,6 +57,7 @@ export class MidiService {
       JSON.stringify({
         action: 'on',
         cell,
+        value: cell.value,
       })
     );
   }

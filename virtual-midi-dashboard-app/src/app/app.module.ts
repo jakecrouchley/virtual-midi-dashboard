@@ -18,9 +18,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 import { CellComponent } from './components/cell/cell.component';
+import { KnobComponent } from './components/cell/knob/knob.component';
+import { SliderComponent } from './components/cell/slider/slider.component';
+import { ButtonComponent } from './components/cell/button/button.component';
 
 @NgModule({
-  declarations: [AppComponent, InsertCellDialogComponent, CellComponent],
+  declarations: [AppComponent, InsertCellDialogComponent, CellComponent, KnobComponent, SliderComponent, ButtonComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

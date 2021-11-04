@@ -1,52 +1,39 @@
 <div
   class="cell cell-button"
-  [style.width.px]="cellSideLength"
-  [style.height.px]="cellSideLength"
+  [style.width.px]="cellEdgeLength"
+  [style.height.px]="cellEdgeLength"
   (contextmenu)="onCellContextMenu($event); $event.stopPropagation()"
 >
   <ng-container *ngIf="cell; else noCell">
-    <div
-      *ngIf="cell.cellType === 'button'"
-      class="cell-inner"
-      (mousedown)="onCellMousedown($event); $event.stopPropagation()"
-      (mouseup)="onCellMouseup()"
-      (mouseleave)="onCellMouseup()"
-    >
-      <mat-icon
-        class="cell-icon"
-        aria-hidden="false"
-        aria-label="Cell Action"
-        >{{ cell.iconName }}</mat-icon
+    <div *ngIf="cell.cellType === 'button'" class="cell-inner" #cellRef>
+      <app-button
+        [iconName]="cell.iconName"
+        [label]="cell.label"
+        [type]="cell.type"
+        [info]="getCellInfoText()"
+        (midiSend)="onMidiValueReceived($event)"
       >
-      <span class="label">{{ cell.label }}</span>
-      <span class="type">{{ cell.type }}</span>
-      <span class="info">{{ getCellInfoText() }}</span>
+      </app-button>
     </div>
-    <div
-      *ngIf="cell.cellType === 'knob'"
-      class="cell-inner"
-      (drag)="onCellMouseDrag($event)"
-      (dragover)="onCellMouseDrag($event)"
-    >
-      <span class="knob-container">
-        <img class="knob" src="assets/imgs/knob.png" />
-        <img
-          #knobIndicator
-          class="knob-indicator"
-          src="assets/imgs/knob_indicator.png"
-        />
-      </span>
-      <span class="label">{{ cell.label }}</span>
-      <span class="type">{{ cell.type }}</span>
-      <span class="info">{{ getCellInfoText() }}</span>
+    <div *ngIf="cell.cellType === 'knob'" class="cell-inner" #cellRef>
+      <app-knob
+        [label]="cell.label"
+        [type]="cell.type"
+        [info]="getCellInfoText()"
+        (midiSend)="onMidiValueReceived($event)"
+      ></app-knob>
+    </div>
+    <div *ngIf="cell.cellType === 'slider'" class="cell-inner" #cellRef>
+      <app-slider
+        [label]="cell.label"
+        [type]="cell.type"
+        [info]="getCellInfoText()"
+        (midiSend)="onMidiValueReceived($event)"
+      ></app-slider>
     </div>
   </ng-container>
   <ng-template #noCell>
-    <div
-      class="cell-inner"
-      (mousedown)="onCellMousedown($event); $event.stopPropagation()"
-      (mouseup)="onCellMouseup()"
-    >
+    <div class="cell-inner" (mousedown)="onCellMousedown($event)">
       <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action"
         >add</mat-icon
       >

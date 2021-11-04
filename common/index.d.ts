@@ -19,5 +19,7 @@ export interface ICCCell extends ICell {
 export declare type MIDIEvent = {
     cell: ICell | IMIDICell | ICCCell;
     action: "on" | "off";
+    velocity?: number;
+    value?: number;
 };
 //# sourceMappingURL=index.d.ts.map

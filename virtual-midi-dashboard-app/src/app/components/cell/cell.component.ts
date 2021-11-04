@@ -1,116 +1,108 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { BehaviorSubject, of, ReplaySubject } from 'rxjs';
-import { cellSideLength } from 'src/app/app.component';
 import { DataService } from 'src/app/services/data.service';
 import { ICell, IMIDICell, ICCCell, DATA_VERSION } from '../../../../../common';
 import { MidiService } from 'src/app/services/midi.service';
 import { InsertCellDialogComponent } from '../insert-cell-dialog/insert-cell-dialog.component';
+import { fromEvent, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-cell',
   templateUrl: './cell.component.html',
   styleUrls: ['./cell.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
-export class CellComponent implements OnInit {
+export class CellComponent implements OnInit, AfterViewInit {
   @Input() cell!: ICell;
   @Input() index!: number;
+  @Input() cellEdgeLength!: number;
 
-  @ViewChild('knobIndicator') knobIndicator?: ElementRef;
+  @ViewChild('cellRef') cellRef?: ElementRef<HTMLDivElement>;
 
-  currentRotation$ = new BehaviorSubject(0);
-
-  cellSideLength = cellSideLength;
-
-  // Drag Event Vars
-  acceptInput = true;
-  previousX?: number;
-  previousY?: number;
+  $onCellMousedown?: Observable<MouseEvent>;
 
   constructor(
     private midiService: MidiService,
     private dataService: DataService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private changeRef: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {
-    this.currentRotation$.subscribe((rotation) => {
-      console.log(rotation);
-      console.log(this.knobIndicator);
+  ngOnInit(): void {}
 
-      if (this.knobIndicator) {
-        this.knobIndicator.nativeElement.style.transform = `rotate3d(0, 0, 1, ${rotation}deg)`;
-      }
-    });
+  ngAfterViewInit(): void {
+    if (this.cellRef) {
+      this.$onCellMousedown = fromEvent<MouseEvent>(
+        this.cellRef.nativeElement,
+        'mousedown'
+      );
+      this.$onCellMousedown.subscribe((event) => {
+        if (event.button === 2) {
+          event.preventDefault();
+          this.openDialog();
+        }
+      });
+    }
   }
 
   onCellMousedown(event: MouseEvent) {
-    event.preventDefault();
-    if (this.cell && event.button !== 2) {
-      switch (this.cell.type) {
-        case 'midi':
-          this.midiService.sendMidiNoteOn(this.cell as IMIDICell);
-          break;
-        case 'cc':
-          this.midiService.sendCC(this.cell as ICCCell);
-          break;
-        default:
-          this.midiService.sendMidiNoteOn(this.cell as IMIDICell);
-      }
-    } else if (event.button === 2) {
+    if (event.button === 2) {
       this.openDialog();
     } else {
       this.openDialog();
     }
   }
 
-  onCellMouseup() {
-    if (this.cell) {
-      switch (this.cell.type) {
-        case 'midi':
-          this.midiService.sendMidiNoteOff(this.cell as IMIDICell);
-          break;
-        case 'cc':
-          // TODO: Build this in
-          break;
-        default:
-          this.midiService.sendMidiNoteOff(this.cell as IMIDICell);
-      }
+  onMidiValueReceived(value: number) {
+    if (this.cell.type === 'midi') {
+      const updatedCell: IMIDICell = {
+        ...(this.cell as IMIDICell),
+        velocity: value,
+      };
+      this.cell = updatedCell;
+      this.changeRef.detectChanges();
+      this.dataService.replaceCell(updatedCell);
+
+      this.midiService.sendMidiNoteOn(this.cell as IMIDICell);
+    } else if (this.cell.type === 'cc') {
+      const updatedCell: ICCCell = {
+        ...(this.cell as ICCCell),
+        value,
+      };
+      this.cell = updatedCell;
+      this.changeRef.detectChanges();
+      this.dataService.replaceCell(updatedCell);
+
+      this.midiService.sendCC(this.cell as ICCCell);
     }
   }
 
-  onCellMouseDrag(event: DragEvent) {
-    event.preventDefault();
-    if (event.dataTransfer) {
-      event.dataTransfer.dropEffect = 'move';
-    }
-    if (this.acceptInput) {
-      this.acceptInput = false;
-      this.calculateRotationFromEvent(event);
-      setTimeout(() => {
-        this.acceptInput = true;
-      }, 1);
-    }
+  // onKnobCellMousedown(event: MouseEvent) {
+  //   // event.preventDefault();
+  // }
 
-    // console.log('x: ', event.x);
-    // console.log('y: ', event.y);
-    // console.log('clientX: ', event.clientX);
-    // console.log('clientY: ', event.clientY);
-    // console.log('pageX: ', event.pageX);
-    // console.log('pageY: ', event.pageY);
-  }
+  // onCellMouseDragStart(event: DragEvent) {
+  //   this.$onDragStart.next(event);
+  // }
 
-  calculateRotationFromEvent(event: DragEvent) {
-    if (this.previousY) {
-      // const diffY =
-      if (this.previousY > event.clientY) {
-        this.currentRotation$.next(this.currentRotation$.value + 1);
-      } else if (this.previousY < event.clientY) {
-        this.currentRotation$.next(this.currentRotation$.value - 1);
-      }
-    }
-    this.previousY = event.clientY;
-  }
+  // onCellMouseDragEnd(event: DragEvent) {
+  //   this.$onDragEnd.next(event);
+  // }
+
+  // onCellMouseDrag(event: DragEvent) {
+  //   this.$onDrag.next(event);
+  // }
 
   onCellContextMenu(event: Event) {
     event.preventDefault();

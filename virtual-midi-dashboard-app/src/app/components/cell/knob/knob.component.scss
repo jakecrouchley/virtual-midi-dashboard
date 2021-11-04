@@ -1,0 +1,53 @@
+
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.knob-container {
+  position: relative;
+
+  width: 60%;
+  height: 60%;
+  .knob,
+  .knob-indicator {
+    position: absolute;
+
+    width: 100%;
+    height: 100%;
+  }
+
+  .cursor-capture-area-top, .cursor-capture-area-bottom {
+    width: 100%;
+    height: 50%;
+
+    user-select: none;
+    pointer-events: none;
+    &:hover {
+      cursor:grab;
+    }
+    &:-moz-drag-over {
+      cursor: grabbing;
+    }
+  }
+}
+
+.drag-indicator {
+  position: absolute;
+
+  display: none;
+  box-sizing: border-box;
+
+  width: 20px;
+  height: 20px;
+
+  background-color: rgba(196,196,196, 0.25);
+
+  border: 4px solid #979797;
+  border-radius: 50%;
+  // transform: translate3d(-50%, -50%, 0);
+}

@@ -50,7 +50,9 @@ export class InsertCellDialogComponent implements OnInit {
   ) {
     if (data.cell) {
       this.isEditMode = true;
-      this.newCellForm.setValue(data.cell);
+      // Pull non-form values out of cell data
+      const { version, ...cellValues } = data.cell;
+      this.newCellForm.setValue(cellValues);
     }
 
     const recentlyUsedIcons = this.dataService.getRecentlyUsedIconList();
