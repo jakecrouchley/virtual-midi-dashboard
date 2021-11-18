@@ -1,45 +1,47 @@
-<div class="top-row">
-  <p class="version">Version {{ dataVersion }}</p>
-  <span class="divider"></span>
-  <button mat-flat-button (click)="onNewClicked()">New</button>
-  <span class="divider"></span>
-  <button mat-flat-button (click)="onDownloadClicked()">Download</button>
-  <span class="divider"></span>
-  <label class="load-file-label" for="load-file">Load: </label>
-  <input
-    #fileInput
-    class="file-input"
-    type="file"
-    id="load-file"
-    (change)="handleFileInput($event)"
-  />
-</div>
-<div class="cell-container" [style.width.px]="cellEdgeLength" #cellContainer>
-  <app-cell
-    *ngFor="let cell of cells; let i = index"
-    [cell]="cell"
-    [index]="i"
-    [cellEdgeLength]="cellEdgeLength"
-  ></app-cell>
-  <!-- <div
-    class="cell"
-    [style.width.px]="cellEdgeLength"
-    [style.height.px]="cellEdgeLength"
-    (click)="openDialog()"
-    *ngIf="cells.length === 0"
-  >
-    <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action"
-      >add</mat-icon
+<div class="dashboard-container">
+  <div class="top-row">
+    <button (click)="onNewClicked()">New</button>
+    <button (click)="onDownloadClicked()">Download</button>
+    <label class="load-file-label" for="load-file">Load: </label>
+    <input
+      #fileInput
+      class="file-input"
+      type="file"
+      id="load-file"
+      (change)="handleFileInput($event)"
+    />
+    <p class="version">Version {{ dataVersion }}</p>
+  </div>
+  <div class="cell-container" [style.width.px]="cellEdgeLength" #cellContainer>
+    <app-cell
+      *ngFor="let cell of cells; let i = index"
+      [cell]="cell"
+      [index]="i"
+      [cellEdgeLength]="cellEdgeLength"
+    ></app-cell>
+    <!-- <div
+      class="cell"
+      [style.width.px]="cellEdgeLength"
+      [style.height.px]="cellEdgeLength"
+      (click)="openDialog()"
+      *ngIf="cells.length === 0"
     >
-  </div> -->
-  <!-- <div
-    class="cell"
-    [style.width.px]="cellEdgeLength"
-    [style.height.px]="cellEdgeLength"
-    (click)="installPWA()"
-  >
-    <span>Install PWA</span>
-  </div> -->
+      <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action"
+        >add</mat-icon
+      >
+    </div> -->
+    <!-- <div
+      class="cell"
+      [style.width.px]="cellEdgeLength"
+      [style.height.px]="cellEdgeLength"
+      (click)="installPWA()"
+    >
+      <span>Install PWA</span>
+    </div> -->
+  </div>
+  <div class="bottom-bar-container">
+    <!-- <img class="bottom-bar" src="assets/imgs/bottom-bar.png" /> -->
+  </div>
 </div>
 
 <ng-template #confirmNewDialog>

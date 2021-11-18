@@ -11,15 +11,18 @@ import {
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { fromEvent } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { DATA_VERSION, ICell } from '../../../common';
 import { CELL_LOCAL_STORAGE_KEY, DataService } from './services/data.service';
 
-export let NUM_ROWS = 3;
+// export let NUM_ROWS = 3;
 // Cell edge length = (window - navbar height and padding) / desired no. of rows
 // export const cellEdgeLength = (window.innerHeight - 34) / NUM_ROWS;
 export let cellEdgeLength = 200;
 export const minCellEdgeLength = 150;
 export const maxCellEdgeLength = 250;
+
+export let gridSize = 12;
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -30,12 +33,10 @@ export class AppComponent implements OnInit, AfterViewInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('cellContainer') cellContainer!: ElementRef<HTMLElement>;
 
-  defaultGridCount = 12; // Dynamic option: Math.floor(window.innerWidth / this.cellEdgeLength) * this.NUM_ROWS;
-  startingGridCount = 12;
-
   cells: ICell[] = [];
   cellEdgeLength = cellEdgeLength;
   NUM_COLS = 4;
+  NUM_ROWS = 0;
   gridTemplateCols = `repeat(${this.NUM_COLS}, ${cellEdgeLength})`;
 
   dataVersion = DATA_VERSION;
@@ -63,7 +64,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     //     this.cells[cell.index] = cell;
     //   });
     // });
-    this.cells = new Array(this.startingGridCount);
+    this.cells = new Array(gridSize);
+    this.dataService.cells$.subscribe((cells) => {
+      cells.forEach((cell) => {
+        this.cells[cell.index] = cell;
+      });
+    });
   }
 
   ngAfterViewInit() {
@@ -80,6 +86,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     fromEvent(window, 'resize').subscribe((event) => {
       // console.log(event);
       this.calculateGridDimensions();
+      this.populateCells();
     });
     this.calculateGridDimensions();
     this.populateCells();
@@ -94,17 +101,22 @@ export class AppComponent implements OnInit, AfterViewInit {
     } else if (cellEdgeLength < minCellEdgeLength) {
       this.NUM_COLS -= 1;
     }
+    this.NUM_ROWS = Math.floor((window.innerHeight - 34) / cellEdgeLength);
+    gridSize = this.NUM_COLS * this.NUM_ROWS;
+
     // Update local variable with value of exported variable
     this.cellEdgeLength = cellEdgeLength;
 
     this.cellContainer.nativeElement.style.gridTemplateColumns = `repeat(${this.NUM_COLS}, ${cellEdgeLength}px)`;
-    this.cellContainer.nativeElement.style.gridTemplateRows = `repeat(${this.NUM_COLS}, ${cellEdgeLength}px)`;
+    this.cellContainer.nativeElement.style.gridTemplateRows = `repeat(${this.NUM_ROWS}, ${cellEdgeLength}px)`;
 
     this.changeRef.detectChanges();
   }
 
   populateCells() {
-    this.dataService.cells$.subscribe((cells) => {
+    // Calculate number of cells to fit grid
+    this.cells = new Array(gridSize);
+    this.dataService.cells$.pipe(take(1)).subscribe((cells) => {
       cells.forEach((cell) => {
         this.cells[cell.index] = cell;
       });

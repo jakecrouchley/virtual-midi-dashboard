@@ -1,6 +1,12 @@
 $menu-bar-size: 32px;
 $menu-bar-padding: 2px;
 
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .top-row {
   display: flex;
   align-items: center;
@@ -9,23 +15,16 @@ $menu-bar-padding: 2px;
   padding-bottom: $menu-bar-padding;
 
   button {
-    background-color: #e3e3e3;
   }
 
   .version {
     margin: 0 16px;
+    flex: 1;
+    text-align: end;
   }
 
   .load-file-label {
     margin-left: 16px;
-  }
-
-  .divider {
-    width: 0;
-    height: 100%;
-    margin: 0 8px;
-
-    border: 1px solid #e3e3e3;
   }
 }
 
@@ -43,5 +42,18 @@ $menu-bar-padding: 2px;
   display: grid;
   grid-template-rows: repeat(3, 150px);
   grid-template-columns: repeat(3, 150px);
-  height: calc(100% - #{$menu-bar-size});
+  max-height: calc(100% - #{$menu-bar-size});
+}
+
+.bottom-bar-container {
+  flex: 1;
+  // overflow: hidden;
+  background-image: url("/assets/imgs/bottom-bar.png");
+  background-size: 100% 100%;
+
+  // .bottom-bar {
+  //   height: 255px;
+  //   width: 100%;
+  //   object-fit: fill;
+  // }
 }

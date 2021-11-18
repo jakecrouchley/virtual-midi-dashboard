@@ -111,10 +111,10 @@ export class CellComponent implements OnInit, AfterViewInit {
   getCellInfoText() {
     if (this.cell.type === 'midi') {
       const midiCell = this.cell as IMIDICell;
-      return `${midiCell.note}, ${midiCell.velocity}`;
+      return `${midiCell.note}`;
     } else {
       const ccCell = this.cell as ICCCell;
-      return `${ccCell.controller}, ${ccCell.value}`;
+      return `${ccCell.controller}`;
     }
   }
 
