@@ -30,6 +30,8 @@ export class CellComponent implements OnInit, AfterViewInit {
 
   @ViewChild('cellRef') cellRef?: ElementRef<HTMLDivElement>;
 
+  showNewCellForm = false;
+
   $onCellMousedown?: Observable<MouseEvent>;
 
   constructor(
@@ -62,6 +64,13 @@ export class CellComponent implements OnInit, AfterViewInit {
     } else {
       this.openDialog();
     }
+  }
+
+  onCellMouseOver(event: MouseEvent) {
+    this.showNewCellForm = true;
+  }
+  onCellMouseLeave(event: MouseEvent) {
+    this.showNewCellForm = false;
   }
 
   onMidiValueReceived(value: number) {

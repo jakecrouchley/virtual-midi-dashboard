@@ -33,10 +33,15 @@
     </div>
   </ng-container>
   <ng-template #noCell>
-    <div class="cell-inner" (mousedown)="onCellMousedown($event)">
+    <div
+      class="cell-inner"
+      (mousedown)="onCellMousedown($event)"
+      (mouseover)="onCellMouseOver($event)"
+    >
       <!-- <mat-icon class="cell-icon" aria-hidden="false" aria-label="Cell Action"
         >add</mat-icon
       > -->
     </div>
   </ng-template>
+  <app-new-cell-form [(showForm)]="showNewCellForm"></app-new-cell-form>
 </div>

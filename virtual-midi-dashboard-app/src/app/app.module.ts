@@ -21,9 +21,10 @@ import { CellComponent } from './components/cell/cell.component';
 import { KnobComponent } from './components/cell/knob/knob.component';
 import { SliderComponent } from './components/cell/slider/slider.component';
 import { ButtonComponent } from './components/cell/button/button.component';
+import { NewCellFormComponent } from './components/new-cell-form/new-cell-form.component';
 
 @NgModule({
-  declarations: [AppComponent, InsertCellDialogComponent, CellComponent, KnobComponent, SliderComponent, ButtonComponent],
+  declarations: [AppComponent, InsertCellDialogComponent, CellComponent, KnobComponent, SliderComponent, ButtonComponent, NewCellFormComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

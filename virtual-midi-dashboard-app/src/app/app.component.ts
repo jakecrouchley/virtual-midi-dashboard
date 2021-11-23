@@ -70,6 +70,19 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.cells[cell.index] = cell;
       });
     });
+
+    this.NUM_COLS = Math.floor(window.innerWidth / cellEdgeLength);
+
+    fromEvent(window, 'resize').subscribe((event) => {
+      // console.log(event);
+      this.calculateGridDimensions();
+      this.populateCells();
+    });
+    fromEvent(window, 'DOMContentLoaded').subscribe((event) => {
+      // console.log(event);
+      this.calculateGridDimensions();
+      this.populateCells();
+    });
   }
 
   ngAfterViewInit() {
@@ -80,16 +93,6 @@ export class AppComponent implements OnInit, AfterViewInit {
     overlay.oncontextmenu = (event) => {
       event.preventDefault();
     };
-
-    this.NUM_COLS = Math.floor(window.innerWidth / cellEdgeLength);
-
-    fromEvent(window, 'resize').subscribe((event) => {
-      // console.log(event);
-      this.calculateGridDimensions();
-      this.populateCells();
-    });
-    this.calculateGridDimensions();
-    this.populateCells();
   }
 
   calculateGridDimensions() {
@@ -109,8 +112,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     this.cellContainer.nativeElement.style.gridTemplateColumns = `repeat(${this.NUM_COLS}, ${cellEdgeLength}px)`;
     this.cellContainer.nativeElement.style.gridTemplateRows = `repeat(${this.NUM_ROWS}, ${cellEdgeLength}px)`;
-
-    this.changeRef.detectChanges();
   }
 
   populateCells() {
