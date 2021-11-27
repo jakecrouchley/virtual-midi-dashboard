@@ -3,5 +3,92 @@
   *ngIf="showForm"
   (mouseleave)="onMouseLeave($event)"
 >
-  <p>new-cell-form works!</p>
+  <p class="index-display">{{ index }}</p>
+  <div class="top-buttons" *ngIf="isFormStarted">
+    <div class="button-group">
+      <button
+        class="previous"
+        *ngIf="currentPage !== 0"
+        (click)="onPreviousPageClicked()"
+      >
+        &lt;
+      </button>
+      <button class="close" *ngIf="cell && currentPage === 0">x</button>
+    </div>
+    <div class="button-group">
+      <button
+        class="next"
+        *ngIf="currentPage !== pageCount"
+        (click)="onNextPageClicked()"
+      >
+        &gt;
+      </button>
+      <button
+        class="save"
+        *ngIf="currentPage === pageCount"
+        (click)="onSubmit()"
+      >
+        &#10003;
+      </button>
+    </div>
+  </div>
+  <div class="control-group cell-type" *ngIf="currentPage === 0">
+    <button
+      class="button button-button"
+      [class.selected]="newCellForm.value.cellType === 'button'"
+      (click)="controlTypeSelected('button')"
+    >
+      Button
+    </button>
+    <button
+      class="button knob-button"
+      [class.selected]="newCellForm.value.cellType === 'knob'"
+      (click)="controlTypeSelected('knob')"
+    >
+      Knob
+    </button>
+    <button
+      class="button slider-button"
+      [class.selected]="newCellForm.value.cellType === 'slider'"
+      (click)="controlTypeSelected('slider')"
+    >
+      Slider
+    </button>
+  </div>
+  <div class="control-group message-type" *ngIf="currentPage === 1">
+    <button
+      class="button"
+      [class.selected]="newCellForm.value.type === 'midi'"
+      (click)="typeSelected('midi')"
+    >
+      MIDI
+    </button>
+    <button
+      class="button"
+      [class.selected]="newCellForm.value.type === 'cc'"
+      (click)="typeSelected('cc')"
+    >
+      CC
+    </button>
+  </div>
+  <div
+    class="control-group"
+    *ngIf="newCellForm.value.type === 'midi' && currentPage === 2"
+    [formGroup]="newCellForm"
+  >
+    <input type="text" placeholder="Note" [formControlName]="'note'" />
+    <input
+      type="text"
+      placeholder="Maximum Velocity"
+      [formControlName]="'velocity'"
+    />
+    <input type="text" placeholder="Label" [formControlName]="'label'" />
+  </div>
+
+  <div class="bottom-buttons" *ngIf="isFormStarted">
+    <div class="button-group"></div>
+    <div class="button-group">
+      <button class="delete" (click)="onClearFormPressed()">delete</button>
+    </div>
+  </div>
 </div>

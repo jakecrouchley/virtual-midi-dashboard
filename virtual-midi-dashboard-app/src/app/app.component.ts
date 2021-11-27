@@ -67,7 +67,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.cells = new Array(gridSize);
     this.dataService.cells$.subscribe((cells) => {
       cells.forEach((cell) => {
+        console.log([...this.cells]);
+        console.log(cell.index);
+
         this.cells[cell.index] = cell;
+
+        console.log([...this.cells]);
       });
     });
 
@@ -79,7 +84,7 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.populateCells();
     });
     fromEvent(window, 'DOMContentLoaded').subscribe((event) => {
-      // console.log(event);
+      console.log('DOM Loaded');
       this.calculateGridDimensions();
       this.populateCells();
     });
@@ -132,7 +137,8 @@ export class AppComponent implements OnInit, AfterViewInit {
       dialogRef.afterClosed().subscribe((confirmed) => {
         if (confirmed) {
           console.log('Confirmed new');
-          this.cells = new Array(this.cells.length);
+          this.cells = new Array(gridSize);
+          this.dataService.cells$.next([]);
           localStorage.removeItem(CELL_LOCAL_STORAGE_KEY);
         }
       });
