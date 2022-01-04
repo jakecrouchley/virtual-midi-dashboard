@@ -5,6 +5,7 @@ import { ICell, DATA_VERSION } from '../../../../common';
 import * as semver from 'semver';
 
 export const CELL_LOCAL_STORAGE_KEY = 'CELLS';
+export const NUM_COLS_LOCAL_STORAGE_KEY = 'NUM_COLS';
 export const RECENTLY_USED_ICONS_KEY = 'RECENTLTY_USED_ICONS';
 
 @Injectable({
@@ -12,17 +13,25 @@ export const RECENTLY_USED_ICONS_KEY = 'RECENTLTY_USED_ICONS';
 })
 export class DataService {
   cells$: BehaviorSubject<ICell[]> = new BehaviorSubject<ICell[]>([]);
+  numberOfCols$: BehaviorSubject<number> = new BehaviorSubject(0);
 
   constructor() {
-    // Use any previously stored cells
+    // Use any previously stored values
     const localCells = this.fetchStoredCells();
     if (localCells) {
       this.cells$.next(localCells);
+    }
+    const storedColNum = this.fetchStoredColNum();
+    if (storedColNum) {
+      this.numberOfCols$.next(storedColNum);
     }
 
     // Store cells each time they change
     this.cells$.subscribe((cells) => {
       this.storeCells(cells);
+    });
+    this.numberOfCols$.subscribe((value) => {
+      this.storeColNum(value);
     });
   }
 
@@ -57,7 +66,7 @@ export class DataService {
   removeCell(index: number) {
     const newCells = this.cells$.value;
     const indexToRemove = newCells.findIndex((cell) => cell.index === index);
-    newCells.splice(indexToRemove, 1);
+    newCells.splice(indexToRemove);
     this.cells$.next(newCells);
   }
 
@@ -82,6 +91,29 @@ export class DataService {
     } else {
       return null;
     }
+  }
+
+  storeColNum(value: number) {
+    const storedValue = JSON.stringify(value);
+    localStorage.setItem(NUM_COLS_LOCAL_STORAGE_KEY, storedValue);
+  }
+
+  fetchStoredColNum(): number | null {
+    const storedValue = localStorage.getItem(NUM_COLS_LOCAL_STORAGE_KEY);
+    if (storedValue) {
+      try {
+        const value = JSON.parse(storedValue);
+        return value;
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
+    }
+    return null;
+  }
+
+  setNumberOfCols(cols: number) {
+    this.numberOfCols$.next(cols);
   }
 
   getRecentlyUsedIconList(): string[] {

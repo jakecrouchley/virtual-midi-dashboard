@@ -8,17 +8,23 @@
     <div class="button-group">
       <button
         class="previous"
-        *ngIf="currentPage !== 0"
+        *ngIf="enablePreviousPageButton()"
         (click)="onPreviousPageClicked()"
       >
         &lt;
       </button>
-      <button class="close" *ngIf="cell && currentPage === 0">x</button>
+      <button
+        class="close"
+        *ngIf="currentPage === 0"
+        (click)="onCloseFormPressed()"
+      >
+        x
+      </button>
     </div>
     <div class="button-group">
       <button
         class="next"
-        *ngIf="currentPage !== pageCount"
+        *ngIf="enableNextPageButton()"
         (click)="onNextPageClicked()"
       >
         &gt;
@@ -83,6 +89,14 @@
       [formControlName]="'velocity'"
     />
     <input type="text" placeholder="Label" [formControlName]="'label'" />
+    <input
+      type="checkbox"
+      id="sustain-checkbox"
+      [formControlName]="'sustain'"
+    />
+    <label for="sustain-checkbox">Sustain on release</label>
+    <ng-container *ngIf="newCellForm.value.cellType === 'button'">
+    </ng-container>
   </div>
 
   <div class="bottom-buttons" *ngIf="isFormStarted">

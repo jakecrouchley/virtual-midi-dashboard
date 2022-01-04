@@ -15,9 +15,6 @@ import { take } from 'rxjs/operators';
 import { DATA_VERSION, ICell } from '../../../common';
 import { CELL_LOCAL_STORAGE_KEY, DataService } from './services/data.service';
 
-// export let NUM_ROWS = 3;
-// Cell edge length = (window - navbar height and padding) / desired no. of rows
-// export const cellEdgeLength = (window.innerHeight - 34) / NUM_ROWS;
 export let cellEdgeLength = 200;
 export const minCellEdgeLength = 150;
 export const maxCellEdgeLength = 250;
@@ -44,39 +41,32 @@ export class AppComponent implements OnInit, AfterViewInit {
   constructor(
     private dataService: DataService,
     private dialog: MatDialog,
-    private overlay: Overlay,
-    private changeRef: ChangeDetectorRef
+    private overlay: Overlay
   ) {
     this.overlay.create();
   }
 
   ngOnInit() {
-    // this.dataService.cells$.subscribe((cells) => {
-    //   let startingGridSize = this.defaultGridCount;
-    //   cells.forEach((cell) => {
-    //     startingGridSize = Math.max(
-    //       isNaN(cell.index + 1) ? 0 : cell.index + 1,
-    //       startingGridSize
-    //     );
-    //   });
-    //   this.cells = new Array(startingGridSize);
-    //   cells.forEach((cell) => {
-    //     this.cells[cell.index] = cell;
-    //   });
-    // });
     this.cells = new Array(gridSize);
     this.dataService.cells$.subscribe((cells) => {
+      this.cells = new Array(gridSize);
       cells.forEach((cell) => {
-        console.log([...this.cells]);
-        console.log(cell.index);
-
         this.cells[cell.index] = cell;
-
-        console.log([...this.cells]);
+        console.log('cells updated');
       });
     });
 
-    this.NUM_COLS = Math.floor(window.innerWidth / cellEdgeLength);
+    this.dataService.numberOfCols$.subscribe((value) => {
+      if (value) {
+        this.NUM_COLS = value;
+        this.calculateGridDimensions();
+        this.populateCells();
+      } else {
+        this.dataService.setNumberOfCols(
+          Math.floor(window.innerWidth / cellEdgeLength)
+        );
+      }
+    });
 
     fromEvent(window, 'resize').subscribe((event) => {
       // console.log(event);
@@ -105,18 +95,27 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     cellEdgeLength = window.innerWidth / this.NUM_COLS;
     if (cellEdgeLength > maxCellEdgeLength) {
-      this.NUM_COLS += 1;
+      this.dataService.setNumberOfCols(this.NUM_COLS + 1);
     } else if (cellEdgeLength < minCellEdgeLength) {
-      this.NUM_COLS -= 1;
+      this.dataService.setNumberOfCols(this.NUM_COLS - 1);
     }
     this.NUM_ROWS = Math.floor((window.innerHeight - 34) / cellEdgeLength);
     gridSize = this.NUM_COLS * this.NUM_ROWS;
 
     // Update local variable with value of exported variable
     this.cellEdgeLength = cellEdgeLength;
+    if (this.cellContainer?.nativeElement) {
+      this.cellContainer.nativeElement.style.gridTemplateColumns = `repeat(${this.NUM_COLS}, ${cellEdgeLength}px)`;
+      this.cellContainer.nativeElement.style.gridTemplateRows = `repeat(${this.NUM_ROWS}, ${cellEdgeLength}px)`;
+    }
+  }
 
-    this.cellContainer.nativeElement.style.gridTemplateColumns = `repeat(${this.NUM_COLS}, ${cellEdgeLength}px)`;
-    this.cellContainer.nativeElement.style.gridTemplateRows = `repeat(${this.NUM_ROWS}, ${cellEdgeLength}px)`;
+  decreaseCols() {
+    this.dataService.setNumberOfCols(this.NUM_COLS - 1);
+  }
+
+  increaseCols() {
+    this.dataService.setNumberOfCols(this.NUM_COLS + 1);
   }
 
   populateCells() {

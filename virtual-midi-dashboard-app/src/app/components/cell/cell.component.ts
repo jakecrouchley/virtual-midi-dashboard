@@ -52,18 +52,20 @@ export class CellComponent implements OnInit, AfterViewInit {
       this.$onCellMousedown.subscribe((event) => {
         if (event.button === 2) {
           event.preventDefault();
-          this.openDialog();
+          // this.openDialog();
+          this.showNewCellForm = true;
         }
       });
     }
   }
 
   onCellMousedown(event: MouseEvent) {
-    if (event.button === 2) {
-      this.openDialog();
-    } else {
-      this.openDialog();
-    }
+    // if (event.button === 2) {
+    //   this.openDialog();
+    // } else {
+    //   this.openDialog();
+    // }
+    this.showNewCellForm = true;
   }
 
   onCellMouseOver(event: MouseEvent) {
@@ -82,7 +84,6 @@ export class CellComponent implements OnInit, AfterViewInit {
       this.cell = updatedCell;
       this.changeRef.detectChanges();
       this.dataService.replaceCell(updatedCell);
-
       this.midiService.sendMidiNoteOn(this.cell as IMIDICell);
     } else if (this.cell.type === 'cc') {
       const updatedCell: ICCCell = {

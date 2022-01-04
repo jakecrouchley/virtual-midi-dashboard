@@ -40,7 +40,7 @@ class MidiApp {
         const cell = event.cell as ICell;
         if (cell.type === "midi") {
           const midiCell = cell as IMIDICell;
-          this.handleMIDI(midiCell, event.action);
+          this.handleMIDI(midiCell);
         } else {
           const ccCell = cell as ICCCell;
           this.handleCC(ccCell);
@@ -60,22 +60,22 @@ class MidiApp {
       )
     );
 
-    this.app.use(express.json());
+    // this.app.use(express.json());
 
-    this.app.post("/send-midi", (req, res) => {
-      this.handleMIDI(req.body, "on");
-      return res.status(200).send();
-    });
+    // this.app.post("/send-midi", (req, res) => {
+    //   this.handleMIDI(req.body, "on");
+    //   return res.status(200).send();
+    // });
 
-    this.app.post("/send-midi-off", (req, res) => {
-      this.handleMIDI(req.body, "off");
-      return res.status(200).send();
-    });
+    // this.app.post("/send-midi-off", (req, res) => {
+    //   this.handleMIDI(req.body, "off");
+    //   return res.status(200).send();
+    // });
 
-    this.app.post("/send-cc", (req, res) => {
-      this.handleCC(req.body);
-      return res.status(200).send();
-    });
+    // this.app.post("/send-cc", (req, res) => {
+    //   this.handleCC(req.body);
+    //   return res.status(200).send();
+    // });
 
     return this.app.listen(this.port, "0.0.0.0", () => {
       // tslint:disable-next-line:no-console
@@ -83,14 +83,16 @@ class MidiApp {
     });
   }
 
-  handleMIDI(data: IMIDICell, type: "on" | "off") {
+  handleMIDI(data: IMIDICell) {
+    console.log(data);
+
     const { note, velocity } = data;
     const noteData: Note = {
       note,
       velocity,
       channel: this.midiChannel,
     };
-    if (type === "on") {
+    if (velocity > 0) {
       this.virtualOutput?.send("noteon", noteData);
     } else {
       this.virtualOutput?.send("noteoff", noteData);

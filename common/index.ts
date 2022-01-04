@@ -1,4 +1,4 @@
-export const DATA_VERSION = "1.0.0";
+export const DATA_VERSION = "1.0.2";
 
 export const CELL_TYPES = ["button", "knob", "slider"];
 
@@ -9,6 +9,7 @@ export interface ICell {
   type: "midi" | "cc";
   iconName: string;
   index: number;
+  sustain?: boolean;
 }
 
 export interface IMIDICell extends ICell {
@@ -23,7 +24,6 @@ export interface ICCCell extends ICell {
 
 export type MIDIEvent = {
   cell: ICell | IMIDICell | ICCCell;
-  action: "on" | "off";
   velocity?: number;
   value?: number;
 };

@@ -20,6 +20,7 @@ export class ButtonComponent implements OnInit, AfterViewInit {
   @Input() label!: string;
   @Input() type!: string;
   @Input() info!: string;
+  @Input() sustain?: boolean;
 
   @Output() midiSend: EventEmitter<number> = new EventEmitter();
 
@@ -50,9 +51,10 @@ export class ButtonComponent implements OnInit, AfterViewInit {
         'mouseup'
       );
       this.$onMouseUp.subscribe((event) => {
-        console.log(event);
-
-        // this.midiSend.emit(0);
+        console.log(this.sustain);
+        if (!this.sustain) {
+          this.midiSend.emit(0);
+        }
       });
     }
   }

@@ -10,6 +10,8 @@
       id="load-file"
       (change)="handleFileInput($event)"
     />
+    <button (click)="decreaseCols()">-</button>
+    <button (click)="increaseCols()">+</button>
     <p class="version">Version {{ dataVersion }}</p>
   </div>
   <div class="cell-container" [style.width.px]="cellEdgeLength" #cellContainer>

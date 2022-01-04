@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
@@ -48,6 +49,7 @@ export class NewCellFormComponent implements OnInit, OnDestroy {
     this.newCellForm = this.getForm();
     this.isFormStarted = false;
     this.currentPage = 0;
+
     if (this.cell) {
       this.isFormStarted = true;
       // Pull non-form values out of cell data
@@ -58,9 +60,7 @@ export class NewCellFormComponent implements OnInit, OnDestroy {
     this.newCellForm.valueChanges
       .pipe(takeUntil(this.destroy$))
       .subscribe((values) => {
-        console.log(values);
-
-        this.isFormStarted = !!values.cellType;
+        this.isFormStarted = values.cellType !== null;
       });
   }
 
@@ -71,6 +71,7 @@ export class NewCellFormComponent implements OnInit, OnDestroy {
       type: [null, Validators.required],
       note: ['', Validators.required],
       velocity: [127, Validators.required],
+      sustain: [false],
       controller: [''],
       value: [127],
       iconName: [''],
@@ -79,11 +80,18 @@ export class NewCellFormComponent implements OnInit, OnDestroy {
   }
 
   onMouseLeave(event: MouseEvent): void {
-    console.log(this.newCellForm.value);
-    console.log(this.index);
-
     if (!this.isFormStarted) {
       this.showFormChange.emit(false);
+    }
+  }
+
+  enableNextPageButton(): boolean {
+    if (this.currentPage === 0) {
+      return this.newCellForm.value.cellType !== null;
+    } else if (this.currentPage === 1) {
+      return this.newCellForm.value.type !== null;
+    } else {
+      return this.currentPage !== this.pageCount;
     }
   }
 
@@ -94,6 +102,10 @@ export class NewCellFormComponent implements OnInit, OnDestroy {
     );
   }
 
+  enablePreviousPageButton(): boolean {
+    return this.currentPage !== 0;
+  }
+
   onPreviousPageClicked(): void {
     this.currentPage = Math.max(
       0,
@@ -101,8 +113,19 @@ export class NewCellFormComponent implements OnInit, OnDestroy {
     );
   }
 
+  onCloseFormPressed(): void {
+    if (!this.cell) {
+      this.isFormStarted = false;
+    }
+    this.showFormChange.emit(false);
+  }
+
   onClearFormPressed(): void {
+    if (this.cell) {
+      this.dataService.removeCell(this.index);
+    }
     this.initialise();
+    this.showFormChange.emit(false);
   }
 
   controlTypeSelected(controlType: string) {
@@ -121,7 +144,7 @@ export class NewCellFormComponent implements OnInit, OnDestroy {
     const cell = this.newCellForm.value as ICell;
     cell.version = DATA_VERSION;
     this.dataService.addCell(cell);
-    this.onClearFormPressed();
+    this.initialise();
     this.showFormChange.emit(false);
   }
 }

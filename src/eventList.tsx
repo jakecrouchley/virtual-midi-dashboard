@@ -43,7 +43,6 @@ export default class EventList extends Component<any, EventListState> {
             <tr>
               <th>Index</th>
               <th>Type</th>
-              <th>Action</th>
               <th>Note/Controller</th>
               <th>Velocity/Value</th>
               <th>Label</th>
@@ -56,12 +55,11 @@ export default class EventList extends Component<any, EventListState> {
               <tr key={index} style={{ textAlign: "center" }}>
                 <td>{event.cell.index}</td>
                 <td>{event.cell.type}</td>
-                <td>{event.action}</td>
                 <td>
                   {(event.cell as IMIDICell)?.note ||
                     (event.cell as ICCCell)?.controller}
                 </td>
-                <td>{event.velocity || event.value}</td>
+                <td>{isNaN(event.velocity) ? event.value : event.velocity}</td>
                 <td>{event.cell.label}</td>
                 <td>{event.cell.cellType}</td>
                 <td>{event.cell.iconName}</td>
