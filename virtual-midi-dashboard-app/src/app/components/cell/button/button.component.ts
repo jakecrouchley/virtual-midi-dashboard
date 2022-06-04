@@ -8,7 +8,8 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { fromEvent, Observable } from 'rxjs';
+import { fromEvent, merge, Observable } from 'rxjs';
+import { ControlValue } from '../cell.component';
 
 @Component({
   selector: 'app-button',
@@ -20,14 +21,16 @@ export class ButtonComponent implements OnInit, AfterViewInit {
   @Input() label!: string;
   @Input() type!: string;
   @Input() info!: string;
-  @Input() sustain?: boolean;
 
-  @Output() midiSend: EventEmitter<number> = new EventEmitter();
+  @Output() midiSend: EventEmitter<ControlValue> = new EventEmitter();
 
   @ViewChild('button') button?: ElementRef<HTMLDivElement>;
 
   $onMouseDown?: Observable<MouseEvent>;
+  $onMouseLeave?: Observable<MouseEvent>;
   $onMouseUp?: Observable<MouseEvent>;
+
+  isBeingPressed = false;
 
   constructor() {}
 
@@ -35,14 +38,18 @@ export class ButtonComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     if (this.button) {
+      this.button!.nativeElement.ondragstart = (event) => false;
       this.$onMouseDown = fromEvent<MouseEvent>(
         this.button?.nativeElement,
         'mousedown'
       );
       this.$onMouseDown.subscribe((event) => {
-        console.log(event);
         if (event.button === 0) {
-          this.midiSend.emit(127);
+          this.midiSend.emit({
+            action: 'on',
+            value: 127,
+          });
+          this.isBeingPressed = true;
         }
       });
 
@@ -50,11 +57,16 @@ export class ButtonComponent implements OnInit, AfterViewInit {
         this.button?.nativeElement,
         'mouseup'
       );
-      this.$onMouseUp.subscribe((event) => {
-        console.log(this.sustain);
-        if (!this.sustain) {
-          this.midiSend.emit(0);
-        }
+      this.$onMouseLeave = fromEvent<MouseEvent>(
+        this.button?.nativeElement,
+        'mouseout'
+      );
+      merge(this.$onMouseUp, this.$onMouseLeave).subscribe((event) => {
+        this.midiSend.emit({
+          action: 'off',
+          value: 127,
+        });
+        this.isBeingPressed = false;
       });
     }
   }

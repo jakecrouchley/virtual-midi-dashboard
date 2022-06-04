@@ -1,9 +1,15 @@
-import { ICCCell, IMIDICell, MIDIEvent } from "../common";
+import {
+  ICCCell,
+  IMIDICell,
+  IOutputEvent,
+  ICCEvent,
+  IMIDIEvent,
+} from "../common";
 import React, { Component } from "react";
 import { midiApp } from "./app";
 
 type EventListState = {
-  events: MIDIEvent[];
+  events: IOutputEvent[];
 };
 
 export default class EventList extends Component<any, EventListState> {
@@ -59,7 +65,11 @@ export default class EventList extends Component<any, EventListState> {
                   {(event.cell as IMIDICell)?.note ||
                     (event.cell as ICCCell)?.controller}
                 </td>
-                <td>{isNaN(event.velocity) ? event.value : event.velocity}</td>
+                <td>
+                  {event.cell.type === "cc"
+                    ? (event as ICCEvent).value
+                    : (event as IMIDIEvent).velocity}
+                </td>
                 <td>{event.cell.label}</td>
                 <td>{event.cell.cellType}</td>
                 <td>{event.cell.iconName}</td>

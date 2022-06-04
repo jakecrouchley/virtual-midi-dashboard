@@ -10,6 +10,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { BehaviorSubject, combineLatest, fromEvent, Observable } from 'rxjs';
+import { ControlValue } from '../cell.component';
 
 @Component({
   selector: 'app-knob',
@@ -25,7 +26,7 @@ export class KnobComponent implements OnInit, AfterViewInit {
   @ViewChild('knobIndicator') knobIndicator?: ElementRef;
   // @ViewChild('dragIndicator') dragIndicator?: ElementRef<HTMLSpanElement>;
 
-  @Output() midiSend: EventEmitter<number> = new EventEmitter();
+  @Output() midiSend: EventEmitter<ControlValue> = new EventEmitter();
 
   // Drag Event Vars
   startX = 0;
@@ -51,10 +52,16 @@ export class KnobComponent implements OnInit, AfterViewInit {
       if (this.knobIndicator) {
         this.knobIndicator.nativeElement.style.transform = `rotate3d(0, 0, 1, ${rotation}deg)`;
       }
-      console.log(rotation);
 
       const midiValue = Math.ceil((rotation / 360) * 127);
-      this.midiSend.emit(midiValue);
+      this.midiSend.emit({
+        action: 'on',
+        value: midiValue,
+      });
+      this.midiSend.emit({
+        action: 'off',
+        value: midiValue,
+      });
     });
 
     if (this.knob) {

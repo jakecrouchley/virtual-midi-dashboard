@@ -2,9 +2,17 @@ import express from "express";
 import cors from "cors";
 import { Server } from "http";
 import path from "path";
-import { ControlChange, Note, Output } from "easymidi";
+import { Channel, ControlChange, Input, Note, Output } from "easymidi";
 import WebSocket, { Server as WebSocketServer } from "ws";
-import { ICCCell, ICell, IMIDICell, MIDIEvent } from "../common";
+import {
+  ICCCell,
+  ICell,
+  IMIDICell,
+  IOutputEvent,
+  IMIDIEvent,
+  ICCEvent,
+  IInputEvent,
+} from "../common";
 import { ReplaySubject, Subject } from "rxjs";
 
 class MidiApp {
@@ -12,13 +20,14 @@ class MidiApp {
   port = 8080;
   socketPort = 8082;
 
-  midiChannel: 0 = 0;
+  midiChannel: Channel = 0;
 
+  virtualInput?: Input;
   virtualOutput?: Output;
 
   websocket?: WebSocket;
 
-  latestEvent$ = new ReplaySubject<MIDIEvent>(10);
+  latestEvent$ = new ReplaySubject<IOutputEvent>(10);
 
   constructor() {
     this.setupMidi();
@@ -26,6 +35,7 @@ class MidiApp {
   }
 
   setupMidi(): void {
+    this.virtualInput = new Input("Virtual Dashboard", true);
     this.virtualOutput = new Output("Virtual Dashboard", true);
   }
 
@@ -36,14 +46,12 @@ class MidiApp {
     wss.on("connection", (ws) => {
       this.websocket = ws;
       ws.on("message", (data) => {
-        const event = JSON.parse(data.toString()) as MIDIEvent;
+        const event = JSON.parse(data.toString()) as IOutputEvent;
         const cell = event.cell as ICell;
         if (cell.type === "midi") {
-          const midiCell = cell as IMIDICell;
-          this.handleMIDI(midiCell);
+          this.handleMIDI(event as IMIDIEvent);
         } else {
-          const ccCell = cell as ICCCell;
-          this.handleCC(ccCell);
+          this.handleCC(event as ICCEvent);
         }
         this.latestEvent$.next(event);
       });
@@ -59,6 +67,19 @@ class MidiApp {
         )
       )
     );
+
+    this.virtualInput.on("noteon", (note: Note) => {
+      console.log(note);
+      // TODO: turn this into an IEvent and handle it on the frontend
+      const event: IInputEvent = {
+        type: "noteon",
+        payload: note,
+      };
+
+      this.websocket.send(JSON.stringify(event), (error) => {
+        console.error(error);
+      });
+    });
 
     // this.app.use(express.json());
 
@@ -83,30 +104,28 @@ class MidiApp {
     });
   }
 
-  handleMIDI(data: IMIDICell) {
-    console.log(data);
-
-    const { note, velocity } = data;
+  handleMIDI(event: IMIDIEvent) {
     const noteData: Note = {
-      note,
-      velocity,
+      note: event.cell.note,
+      velocity: event.velocity,
       channel: this.midiChannel,
     };
-    if (velocity > 0) {
+    console.log("midi value received: ", event);
+    if (event.action === "on") {
       this.virtualOutput?.send("noteon", noteData);
     } else {
       this.virtualOutput?.send("noteoff", noteData);
     }
   }
 
-  handleCC(data: ICCCell) {
-    const { controller, value } = data;
+  handleCC(event: ICCEvent) {
     const ccData: ControlChange = {
-      controller,
-      value,
+      controller: event.cell.controller,
+      value: event.value,
       channel: this.midiChannel,
     };
-    console.log(ccData);
+
+    console.log("CC value received: ", ccData);
 
     this.virtualOutput?.send("cc", ccData);
   }

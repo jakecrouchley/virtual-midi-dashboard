@@ -6,13 +6,16 @@ import {
   Component,
   ElementRef,
   OnInit,
+  QueryList,
   TemplateRef,
   ViewChild,
+  ViewChildren,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { fromEvent } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { DATA_VERSION, ICell } from '../../../common';
+import { CellComponent } from './components/cell/cell.component';
 import { CELL_LOCAL_STORAGE_KEY, DataService } from './services/data.service';
 
 export let cellEdgeLength = 200;
@@ -29,6 +32,8 @@ export class AppComponent implements OnInit, AfterViewInit {
   @ViewChild('confirmNewDialog') confirmNewDialog!: TemplateRef<any>;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('cellContainer') cellContainer!: ElementRef<HTMLElement>;
+
+  @ViewChildren('cell') cellElements!: QueryList<CellComponent>;
 
   cells: ICell[] = [];
   cellEdgeLength = cellEdgeLength;
@@ -163,6 +168,14 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   onLoadClicked() {}
+
+  onNewCellFormActivated(index: number) {
+    this.cellElements.forEach((cellComponent) => {
+      if (cellComponent.index !== index) {
+        cellComponent.showNewCellForm = false;
+      }
+    });
+  }
 
   handleFileInput(event: any) {
     const file = event.target.files[0] as File;

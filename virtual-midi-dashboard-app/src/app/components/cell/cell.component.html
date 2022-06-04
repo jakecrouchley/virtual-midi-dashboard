@@ -10,7 +10,6 @@
         [iconName]="cell.iconName"
         [label]="cell.label"
         [type]="cell.type"
-        [sustain]="cell.sustain"
         [info]="getCellInfoText()"
         (midiSend)="onMidiValueReceived($event)"
       >
@@ -48,5 +47,6 @@
     [index]="index"
     [(showForm)]="showNewCellForm"
     [cell]="cell"
+    #newCellForm
   ></app-new-cell-form>
 </div>

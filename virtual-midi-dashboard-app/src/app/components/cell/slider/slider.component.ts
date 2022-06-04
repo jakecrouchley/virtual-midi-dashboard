@@ -9,8 +9,8 @@ import {
   ViewChild,
 } from '@angular/core';
 import { BehaviorSubject, fromEvent, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { MIDIEvent } from '../../../../../../common';
+import { distinctUntilChanged } from 'rxjs/operators';
+import { ControlValue } from '../cell.component';
 
 @Component({
   selector: 'app-slider',
@@ -25,7 +25,7 @@ export class SliderComponent implements OnInit, AfterViewInit {
   @ViewChild('slider') slider?: ElementRef<HTMLSpanElement>;
   @ViewChild('sliderHandle') sliderHandle?: ElementRef<HTMLSpanElement>;
 
-  @Output() midiSend: EventEmitter<number> = new EventEmitter();
+  @Output() midiSend: EventEmitter<ControlValue> = new EventEmitter();
 
   // Drag Event Vars
   startX = 0;
@@ -59,7 +59,14 @@ export class SliderComponent implements OnInit, AfterViewInit {
       const shiftedValue = value / 2 + 0.5;
       const midiValue = Math.ceil(shiftedValue * 127);
 
-      this.midiSend.emit(midiValue);
+      this.midiSend.emit({
+        action: 'on',
+        value: midiValue,
+      });
+      this.midiSend.emit({
+        action: 'off',
+        value: midiValue,
+      });
     });
 
     if (this.slider) {

@@ -1,6 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ICCCell, IMIDICell, MIDIEvent } from '../../../../common';
+import { ICCEvent, IInputEvent, IMIDIEvent } from '../../../../common';
 
 export const MIDI_CHANNEL = 1;
 
@@ -29,36 +28,25 @@ export type MidiEvent =
 export class MidiService {
   webSocket?: WebSocket;
 
-  constructor(private http: HttpClient) {
+  constructor() {
     this.webSocket = new WebSocket('ws://localhost:8082');
+    this.webSocket.onmessage = this.onMessageReceived;
   }
 
-  sendMidiNoteOn(cell: IMIDICell) {
-    this.webSocket?.send(
-      JSON.stringify({
-        action: 'on',
-        cell,
-        velocity: cell.velocity,
-      } as MIDIEvent)
-    );
+  sendMidiNote(event: IMIDIEvent) {
+    this.webSocket?.send(JSON.stringify(event));
   }
 
-  sendMidiNoteOff(cell: IMIDICell) {
-    this.webSocket?.send(
-      JSON.stringify({
-        action: 'off',
-        cell,
-      } as MIDIEvent)
-    );
+  sendCC(event: ICCEvent) {
+    this.webSocket?.send(JSON.stringify(event));
   }
 
-  sendCC(cell: ICCCell) {
-    this.webSocket?.send(
-      JSON.stringify({
-        action: 'on',
-        cell,
-        value: cell.value,
-      })
-    );
+  onMessageReceived(message: MessageEvent<any>): any {
+    try {
+      const event: IInputEvent = JSON.parse(message.data);
+      console.log(event);
+    } catch (error: any) {
+      console.error(error);
+    }
   }
 }

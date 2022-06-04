@@ -89,14 +89,19 @@
       [formControlName]="'velocity'"
     />
     <input type="text" placeholder="Label" [formControlName]="'label'" />
+  </div>
+  <div
+    class="control-group"
+    *ngIf="newCellForm.value.type === 'cc' && currentPage === 2"
+    [formGroup]="newCellForm"
+  >
     <input
-      type="checkbox"
-      id="sustain-checkbox"
-      [formControlName]="'sustain'"
+      type="text"
+      placeholder="Controller"
+      [formControlName]="'controller'"
     />
-    <label for="sustain-checkbox">Sustain on release</label>
-    <ng-container *ngIf="newCellForm.value.cellType === 'button'">
-    </ng-container>
+    <input type="text" placeholder="Value" [formControlName]="'value'" />
+    <input type="text" placeholder="Label" [formControlName]="'label'" />
   </div>
 
   <div class="bottom-buttons" *ngIf="isFormStarted">

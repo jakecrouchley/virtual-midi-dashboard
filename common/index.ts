@@ -1,3 +1,5 @@
+import { ControlChange, Note } from "easymidi";
+
 export const DATA_VERSION = "1.0.2";
 
 export const CELL_TYPES = ["button", "knob", "slider"];
@@ -22,8 +24,20 @@ export interface ICCCell extends ICell {
   value: number;
 }
 
-export type MIDIEvent = {
+export interface IOutputEvent {
   cell: ICell | IMIDICell | ICCCell;
-  velocity?: number;
-  value?: number;
-};
+  action: "on" | "off";
+}
+export interface IMIDIEvent extends IOutputEvent {
+  cell: IMIDICell;
+  velocity: number;
+}
+export interface ICCEvent extends IOutputEvent {
+  cell: ICCCell;
+  value: number;
+}
+
+export interface IInputEvent {
+  type: "noteon" | "cc";
+  payload: Note | ControlChange;
+}

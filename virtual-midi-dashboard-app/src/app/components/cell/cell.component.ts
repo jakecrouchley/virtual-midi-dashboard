@@ -3,20 +3,31 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  EventEmitter,
   Input,
   OnChanges,
   OnInit,
+  Output,
   SimpleChanges,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DataService } from 'src/app/services/data.service';
-import { ICell, IMIDICell, ICCCell, DATA_VERSION } from '../../../../../common';
+import {
+  ICell,
+  IMIDICell,
+  ICCCell,
+  DATA_VERSION,
+  ICCEvent,
+  IMIDIEvent,
+} from '../../../../../common';
 import { MidiService } from 'src/app/services/midi.service';
 import { InsertCellDialogComponent } from '../insert-cell-dialog/insert-cell-dialog.component';
 import { fromEvent, Observable } from 'rxjs';
+import { NewCellFormComponent } from '../new-cell-form/new-cell-form.component';
 
+export type ControlValue = { action: 'on' | 'off'; value: number };
 @Component({
   selector: 'app-cell',
   templateUrl: './cell.component.html',
@@ -28,9 +39,25 @@ export class CellComponent implements OnInit, AfterViewInit {
   @Input() index!: number;
   @Input() cellEdgeLength!: number;
 
-  @ViewChild('cellRef') cellRef?: ElementRef<HTMLDivElement>;
+  @Output() newCellFormActivated = new EventEmitter<number>();
 
-  showNewCellForm = false;
+  @ViewChild('cellRef') cellRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('newCellForm') newCellForm!: NewCellFormComponent;
+
+  private _showNewCellForm = false;
+  get showNewCellForm() {
+    return this._showNewCellForm;
+  }
+  set showNewCellForm(value: boolean) {
+    if (value) {
+      this._showNewCellForm = value;
+      this.newCellFormActivated.emit(this.index);
+    } else {
+      if (!this.newCellForm.isFormStarted) {
+        this._showNewCellForm = value;
+      }
+    }
+  }
 
   $onCellMousedown?: Observable<MouseEvent>;
 
@@ -75,26 +102,23 @@ export class CellComponent implements OnInit, AfterViewInit {
     this.showNewCellForm = false;
   }
 
-  onMidiValueReceived(value: number) {
-    if (this.cell.type === 'midi') {
-      const updatedCell: IMIDICell = {
-        ...(this.cell as IMIDICell),
-        velocity: value,
-      };
-      this.cell = updatedCell;
-      this.changeRef.detectChanges();
-      this.dataService.replaceCell(updatedCell);
-      this.midiService.sendMidiNoteOn(this.cell as IMIDICell);
-    } else if (this.cell.type === 'cc') {
-      const updatedCell: ICCCell = {
-        ...(this.cell as ICCCell),
-        value,
-      };
-      this.cell = updatedCell;
-      this.changeRef.detectChanges();
-      this.dataService.replaceCell(updatedCell);
+  onMidiValueReceived(value: ControlValue) {
+    console.log('value sent: ', value);
 
-      this.midiService.sendCC(this.cell as ICCCell);
+    if (this.cell.type === 'midi') {
+      const midiEvent: IMIDIEvent = {
+        cell: this.cell as IMIDICell,
+        action: value.action,
+        velocity: value.value,
+      };
+      this.midiService.sendMidiNote(midiEvent);
+    } else if (this.cell.type === 'cc') {
+      const ccEvent: ICCEvent = {
+        cell: this.cell as ICCCell,
+        action: value.action,
+        value: value.value,
+      };
+      this.midiService.sendCC(ccEvent);
     }
   }
 

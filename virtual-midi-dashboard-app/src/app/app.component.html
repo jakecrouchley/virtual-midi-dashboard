@@ -16,10 +16,12 @@
   </div>
   <div class="cell-container" [style.width.px]="cellEdgeLength" #cellContainer>
     <app-cell
+      #cell
       *ngFor="let cell of cells; let i = index"
       [cell]="cell"
       [index]="i"
       [cellEdgeLength]="cellEdgeLength"
+      (newCellFormActivated)="onNewCellFormActivated($event)"
     ></app-cell>
     <!-- <div
       class="cell"

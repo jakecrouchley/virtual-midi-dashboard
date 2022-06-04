@@ -2,7 +2,13 @@
   iconName
 }}</mat-icon>
 <div class="button-container" #button>
-  <img src="assets/imgs/button.svg" />
+  <img
+    src="{{
+      isBeingPressed
+        ? 'assets/imgs/button-pressed.svg'
+        : 'assets/imgs/button.svg'
+    }}"
+  />
 </div>
 <span class="label">{{ label }}</span>
 <span class="type">{{ type }}</span>
