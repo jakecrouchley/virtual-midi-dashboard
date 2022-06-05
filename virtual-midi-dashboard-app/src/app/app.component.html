@@ -1,18 +1,26 @@
 <div class="dashboard-container">
   <div class="top-row">
-    <button (click)="onNewClicked()">New</button>
-    <button (click)="onDownloadClicked()">Download</button>
-    <label class="load-file-label" for="load-file">Load: </label>
-    <input
-      #fileInput
-      class="file-input"
-      type="file"
-      id="load-file"
-      (change)="handleFileInput($event)"
-    />
-    <button (click)="decreaseCols()">-</button>
-    <button (click)="increaseCols()">+</button>
-    <p class="version">Version {{ dataVersion }}</p>
+    <div class="group left">
+      <button (click)="onNewClicked()">New</button>
+      <button (click)="onDownloadClicked()">Download</button>
+      <label class="load-file-label" for="load-file">Load: </label>
+      <input
+        #fileInput
+        class="file-input"
+        type="file"
+        id="load-file"
+        (change)="handleFileInput($event)"
+      />
+      <button (click)="decreaseCols()">-</button>
+      <button (click)="increaseCols()">+</button>
+    </div>
+    <div class="group center">
+      <p class="title">{{ fileName }}</p>
+      <!-- TODO: turn this into an input -->
+    </div>
+    <div class="group right">
+      <p class="version">Version {{ dataVersion }}</p>
+    </div>
   </div>
   <div class="cell-container" [style.width.px]="cellEdgeLength" #cellContainer>
     <app-cell

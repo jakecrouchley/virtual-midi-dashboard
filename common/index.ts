@@ -4,6 +4,26 @@ export const DATA_VERSION = "1.0.2";
 
 export const CELL_TYPES = ["button", "knob", "slider"];
 
+export type MidiEventType =
+  | "noteon"
+  | "noteoff"
+  | "poly aftertouch"
+  | "cc"
+  | "program"
+  | "channel aftertouch"
+  | "pitch"
+  | "position"
+  | "mtc"
+  | "select"
+  | "clock"
+  | "start"
+  | "continue"
+  | "stop"
+  | "activesense"
+  | "reset"
+  | "sysex";
+
+/** Any changes to ICell, IMIDICell and ICCCell you'll need to update the data version */
 export interface ICell {
   version: string;
   cellType: typeof CELL_TYPES[number];
@@ -38,6 +58,6 @@ export interface ICCEvent extends IOutputEvent {
 }
 
 export interface IInputEvent {
-  type: "noteon" | "cc";
+  type: MidiEventType;
   payload: Note | ControlChange;
 }

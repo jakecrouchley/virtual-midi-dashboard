@@ -24,7 +24,15 @@ import { ButtonComponent } from './components/cell/button/button.component';
 import { NewCellFormComponent } from './components/new-cell-form/new-cell-form.component';
 
 @NgModule({
-  declarations: [AppComponent, InsertCellDialogComponent, CellComponent, KnobComponent, SliderComponent, ButtonComponent, NewCellFormComponent],
+  declarations: [
+    AppComponent,
+    InsertCellDialogComponent,
+    CellComponent,
+    KnobComponent,
+    SliderComponent,
+    ButtonComponent,
+    NewCellFormComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,

@@ -13,8 +13,37 @@ $menu-bar-padding: 2px;
   justify-content: flex-start;
   height: $menu-bar-size;
   padding-bottom: $menu-bar-padding;
+  font-family: 'PT Sans';
+
+  .group {
+    flex: 1;
+    display: flex;
+    align-items: center;
+
+    &.left {
+      justify-content: flex-start;
+    }
+
+    &.center {
+      justify-content: center;
+    }
+
+    &.right {
+      justify-content: flex-end;
+    }
+  }
 
   button {
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    padding: 8px;
+    font-family: 'PT Sans';
+    cursor: pointer;
+
+    &:hover {
+      background-color: #aeaeae;
+    }
   }
 
   .version {
@@ -26,6 +55,8 @@ $menu-bar-padding: 2px;
   .load-file-label {
     margin-left: 16px;
   }
+
+  p { margin: 0;}
 }
 
 .file-input {

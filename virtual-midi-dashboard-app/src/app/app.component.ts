@@ -12,11 +12,19 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Note } from 'easymidi';
 import { fromEvent } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { DATA_VERSION, ICell } from '../../../common';
+import {
+  CELL_TYPES,
+  DATA_VERSION,
+  ICell,
+  IMIDICell,
+  IMIDIEvent,
+} from '../../../common';
 import { CellComponent } from './components/cell/cell.component';
 import { CELL_LOCAL_STORAGE_KEY, DataService } from './services/data.service';
+import { MidiService } from './services/midi.service';
 
 export let cellEdgeLength = 200;
 export const minCellEdgeLength = 150;
@@ -41,10 +49,13 @@ export class AppComponent implements OnInit, AfterViewInit {
   NUM_ROWS = 0;
   gridTemplateCols = `repeat(${this.NUM_COLS}, ${cellEdgeLength})`;
 
+  fileName: string | null = null;
+
   dataVersion = DATA_VERSION;
 
   constructor(
     private dataService: DataService,
+    private midiService: MidiService,
     private dialog: MatDialog,
     private overlay: Overlay
   ) {
@@ -83,6 +94,27 @@ export class AppComponent implements OnInit, AfterViewInit {
       this.calculateGridDimensions();
       this.populateCells();
     });
+
+    this.midiService.incomingMessages$.subscribe((event) => {
+      console.log('incoming event: ', event);
+
+      this.cellElements.forEach((component) => {
+        if (
+          component.cell &&
+          event.type === 'noteon' &&
+          component.cell.type === 'midi'
+        ) {
+          if (
+            +(component.cell as IMIDICell).note ===
+            +(event.payload as Note).note
+          ) {
+            component.onInputValueReceived(event);
+          }
+        }
+      });
+    });
+
+    this.fileName = this.dataService.getLastFileName();
   }
 
   ngAfterViewInit() {
@@ -182,6 +214,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     const reader = new FileReader();
     reader.addEventListener('load', (loadEvent) => {
       if (loadEvent.target && loadEvent.target?.result) {
+        this.dataService.setFileName(file.name);
+        this.fileName = this.dataService.getLastFileName();
         this.validateAndLoadFileContent(loadEvent.target.result as string);
         this.fileInput.nativeElement.value = '';
       } else {

@@ -69,7 +69,7 @@ export class NewCellFormComponent implements OnInit, OnDestroy {
       cellType: [null, Validators.required],
       label: [''],
       type: [null, Validators.required],
-      note: ['', Validators.required],
+      note: [null, Validators.required],
       velocity: [127, Validators.required],
       sustain: [false],
       controller: [''],

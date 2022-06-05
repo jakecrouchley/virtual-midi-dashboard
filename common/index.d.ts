@@ -1,6 +1,8 @@
 import { ControlChange, Note } from "easymidi";
 export declare const DATA_VERSION = "1.0.2";
 export declare const CELL_TYPES: string[];
+export declare type MidiEventType = "noteon" | "noteoff" | "poly aftertouch" | "cc" | "program" | "channel aftertouch" | "pitch" | "position" | "mtc" | "select" | "clock" | "start" | "continue" | "stop" | "activesense" | "reset" | "sysex";
+/** Any changes to ICell, IMIDICell and ICCCell you'll need to update the data version */
 export interface ICell {
     version: string;
     cellType: typeof CELL_TYPES[number];
@@ -31,7 +33,7 @@ export interface ICCEvent extends IOutputEvent {
     value: number;
 }
 export interface IInputEvent {
-    type: "noteon" | "cc";
+    type: MidiEventType;
     payload: Note | ControlChange;
 }
 //# sourceMappingURL=index.d.ts.map

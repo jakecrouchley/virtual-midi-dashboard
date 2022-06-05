@@ -11,7 +11,7 @@
         [label]="cell.label"
         [type]="cell.type"
         [info]="getCellInfoText()"
-        (midiSend)="onMidiValueReceived($event)"
+        (midiSend)="onControlValueReceived($event)"
       >
       </app-button>
     </div>
@@ -20,7 +20,7 @@
         [label]="cell.label"
         [type]="cell.type"
         [info]="getCellInfoText()"
-        (midiSend)="onMidiValueReceived($event)"
+        (midiSend)="onControlValueReceived($event)"
       ></app-knob>
     </div>
     <div *ngIf="cell.cellType === 'slider'" class="cell-inner" #cellRef>
@@ -28,7 +28,7 @@
         [label]="cell.label"
         [type]="cell.type"
         [info]="getCellInfoText()"
-        (midiSend)="onMidiValueReceived($event)"
+        (midiSend)="onControlValueReceived($event)"
       ></app-slider>
     </div>
   </ng-container>

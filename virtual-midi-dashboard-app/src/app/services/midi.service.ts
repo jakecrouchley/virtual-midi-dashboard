@@ -1,26 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 import { ICCEvent, IInputEvent, IMIDIEvent } from '../../../../common';
 
 export const MIDI_CHANNEL = 1;
-
-export type MidiEvent =
-  | 'noteon'
-  | 'noteoff'
-  | 'poly aftertouch'
-  | 'cc'
-  | 'program'
-  | 'channel aftertouch'
-  | 'pitch'
-  | 'position'
-  | 'mtc'
-  | 'select'
-  | 'clock'
-  | 'start'
-  | 'continue'
-  | 'stop'
-  | 'activesense'
-  | 'reset'
-  | 'sysex';
 
 @Injectable({
   providedIn: 'root',
@@ -28,9 +10,11 @@ export type MidiEvent =
 export class MidiService {
   webSocket?: WebSocket;
 
+  incomingMessages$ = new Subject<IInputEvent>();
+
   constructor() {
-    this.webSocket = new WebSocket('ws://localhost:8082');
-    this.webSocket.onmessage = this.onMessageReceived;
+    this.webSocket = new WebSocket(`ws://${location.hostname}:8082`);
+    this.webSocket.onmessage = (message) => this.onMessageReceived(message);
   }
 
   sendMidiNote(event: IMIDIEvent) {
@@ -44,7 +28,7 @@ export class MidiService {
   onMessageReceived(message: MessageEvent<any>): any {
     try {
       const event: IInputEvent = JSON.parse(message.data);
-      console.log(event);
+      this.incomingMessages$.next(event);
     } catch (error: any) {
       console.error(error);
     }

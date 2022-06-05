@@ -27,8 +27,13 @@ export class ButtonComponent implements OnInit, AfterViewInit {
   @ViewChild('button') button?: ElementRef<HTMLDivElement>;
 
   $onMouseDown?: Observable<MouseEvent>;
+  $onMouseEnter?: Observable<MouseEvent>;
   $onMouseLeave?: Observable<MouseEvent>;
   $onMouseUp?: Observable<MouseEvent>;
+
+  $onTouchStart?: Observable<MouseEvent>;
+  $onTouchMove?: Observable<MouseEvent>;
+  $onTouchEnd?: Observable<MouseEvent>;
 
   isBeingPressed = false;
 
@@ -43,14 +48,37 @@ export class ButtonComponent implements OnInit, AfterViewInit {
         this.button?.nativeElement,
         'mousedown'
       );
-      this.$onMouseDown.subscribe((event) => {
-        if (event.button === 0) {
+      this.$onMouseEnter = fromEvent<MouseEvent>(
+        this.button?.nativeElement,
+        'mouseenter'
+      );
+      merge(this.$onMouseEnter, this.$onMouseDown).subscribe((event) => {
+        console.log(event);
+        if (event.button === 0 && event.buttons === 1) {
           this.midiSend.emit({
             action: 'on',
             value: 127,
           });
           this.isBeingPressed = true;
         }
+      });
+
+      this.$onTouchStart = fromEvent<MouseEvent>(
+        this.button?.nativeElement,
+        'touchstart'
+      );
+      this.$onTouchMove = fromEvent<MouseEvent>(
+        this.button?.nativeElement,
+        'touchmove'
+      );
+      this.$onTouchStart.subscribe((event) => {
+        event.preventDefault();
+
+        this.midiSend.emit({
+          action: 'on',
+          value: 127,
+        });
+        this.isBeingPressed = true;
       });
 
       this.$onMouseUp = fromEvent<MouseEvent>(
@@ -61,13 +89,19 @@ export class ButtonComponent implements OnInit, AfterViewInit {
         this.button?.nativeElement,
         'mouseout'
       );
-      merge(this.$onMouseUp, this.$onMouseLeave).subscribe((event) => {
-        this.midiSend.emit({
-          action: 'off',
-          value: 127,
-        });
-        this.isBeingPressed = false;
-      });
+      this.$onTouchEnd = fromEvent<MouseEvent>(
+        this.button?.nativeElement,
+        'touchend'
+      );
+      merge(this.$onMouseUp, this.$onMouseLeave, this.$onTouchEnd).subscribe(
+        (event) => {
+          this.midiSend.emit({
+            action: 'off',
+            value: 127,
+          });
+          this.isBeingPressed = false;
+        }
+      );
     }
   }
 }

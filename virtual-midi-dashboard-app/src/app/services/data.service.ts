@@ -7,6 +7,7 @@ import * as semver from 'semver';
 export const CELL_LOCAL_STORAGE_KEY = 'CELLS';
 export const NUM_COLS_LOCAL_STORAGE_KEY = 'NUM_COLS';
 export const RECENTLY_USED_ICONS_KEY = 'RECENTLTY_USED_ICONS';
+export const FILE_NAME_KEY = 'FILE_NAME';
 
 @Injectable({
   providedIn: 'root',
@@ -114,6 +115,14 @@ export class DataService {
 
   setNumberOfCols(cols: number) {
     this.numberOfCols$.next(cols);
+  }
+
+  setFileName(name: string) {
+    localStorage.setItem(FILE_NAME_KEY, name);
+  }
+
+  getLastFileName() {
+    return localStorage.getItem(FILE_NAME_KEY);
   }
 
   getRecentlyUsedIconList(): string[] {

@@ -21,6 +21,7 @@ import {
   DATA_VERSION,
   ICCEvent,
   IMIDIEvent,
+  IInputEvent,
 } from '../../../../../common';
 import { MidiService } from 'src/app/services/midi.service';
 import { InsertCellDialogComponent } from '../insert-cell-dialog/insert-cell-dialog.component';
@@ -53,7 +54,7 @@ export class CellComponent implements OnInit, AfterViewInit {
       this._showNewCellForm = value;
       this.newCellFormActivated.emit(this.index);
     } else {
-      if (!this.newCellForm.isFormStarted) {
+      if (!this.newCellForm.isFormStarted || this.cell) {
         this._showNewCellForm = value;
       }
     }
@@ -87,11 +88,6 @@ export class CellComponent implements OnInit, AfterViewInit {
   }
 
   onCellMousedown(event: MouseEvent) {
-    // if (event.button === 2) {
-    //   this.openDialog();
-    // } else {
-    //   this.openDialog();
-    // }
     this.showNewCellForm = true;
   }
 
@@ -102,7 +98,7 @@ export class CellComponent implements OnInit, AfterViewInit {
     this.showNewCellForm = false;
   }
 
-  onMidiValueReceived(value: ControlValue) {
+  onControlValueReceived(value: ControlValue) {
     console.log('value sent: ', value);
 
     if (this.cell.type === 'midi') {
@@ -120,6 +116,11 @@ export class CellComponent implements OnInit, AfterViewInit {
       };
       this.midiService.sendCC(ccEvent);
     }
+  }
+
+  onInputValueReceived(event: IInputEvent) {
+    console.log(this.index);
+    console.log(event);
   }
 
   // onKnobCellMousedown(event: MouseEvent) {
@@ -152,22 +153,22 @@ export class CellComponent implements OnInit, AfterViewInit {
     }
   }
 
-  openDialog() {
-    const dialogRef = this.dialog.open(InsertCellDialogComponent, {
-      data: {
-        index: this.index,
-        cell: this.cell,
-      },
-    });
+  // openDialog() {
+  //   const dialogRef = this.dialog.open(InsertCellDialogComponent, {
+  //     data: {
+  //       index: this.index,
+  //       cell: this.cell,
+  //     },
+  //   });
 
-    dialogRef.afterClosed().subscribe((result: ICell) => {
-      console.log(`Dialog result: `, result);
-      if (result) {
-        const cell = result as ICell;
-        cell.version = DATA_VERSION;
-        this.dataService.addCell(cell);
-        this.dataService.addIconToRecentlyUsedList(cell.iconName);
-      }
-    });
-  }
+  //   dialogRef.afterClosed().subscribe((result: ICell) => {
+  //     console.log(`Dialog result: `, result);
+  //     if (result) {
+  //       const cell = result as ICell;
+  //       cell.version = DATA_VERSION;
+  //       this.dataService.addCell(cell);
+  //       this.dataService.addIconToRecentlyUsedList(cell.iconName);
+  //     }
+  //   });
+  // }
 }
